@@ -1,4 +1,5 @@
-emma-dash
+Learning analytics dashboard for EMMA. 
 =========
 
-Learning analytics dashboard
+Uses:
+- Twitter Bootstrap 3.2.0
