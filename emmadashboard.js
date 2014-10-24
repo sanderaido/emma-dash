@@ -10,8 +10,7 @@
 
 		$('.fetch').on('click', function(){
 			var courseurl = $('.course-name').find(':selected').data('url');
-			var coursename = $('.course-name').find(':selected').val();
-			console.log(coursename);
+			var coursename = $('.course-name').find(':selected').val();			
 
 			var request = $.ajax({
 				type: 'GET',
