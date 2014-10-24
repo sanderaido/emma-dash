@@ -1,9 +1,14 @@
 <?php
+
+require_once('config.php');
+
 $agent = 'koitsalu@tlu.ee';
+
+
   $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, 'http://localhost:8888/ll/learninglocker/public/data/xAPI/statements?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/create');
-  curl_setopt($curl, CURLOPT_USERPWD, 'a5c960f66ebb0013e1152504801b70770e342580:41100a94622766b876e918d87c316d34ebbf3f7b');
-  curl_setopt($curl, CURLOPT_HEADER, 'X-Experience-API-Version: 1.0.1');
+  curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/create');
+  curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
+  curl_setopt($curl, CURLOPT_HEADER, XAPIVERSIONHEADER);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $data = curl_exec($curl);
   $data = json_decode($data);
