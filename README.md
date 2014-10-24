@@ -5,6 +5,7 @@ Uses:
 - Twitter Bootstrap 3.2.0
 - Highcharts 4.0.4 (Needs to be in root folder and called "Highcharts") http://www.highcharts.com
 - http://www.eyecon.ro/bootstrap-datepicker/
+- uses PHP function "cal_days_in_month" so http://php.net/manual/en/book.calendar.php needs to be enabled
 
 
 Notes:
