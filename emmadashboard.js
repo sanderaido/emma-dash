@@ -10,6 +10,8 @@
 
 		$('.fetch').on('click', function(){
 			var courseurl = $('.course-name').find(':selected').data('url');
+			var coursename = $('.course-name').find(':selected').val();
+			console.log(coursename);
 
 			var request = $.ajax({
 				type: 'GET',
@@ -35,7 +37,7 @@
 					enrolls.push(value['enrollments']);
 					unenrolls.push(value['unenrollments']);
 				});
-				drawChart(cat, enrolls, unenrolls);
+				drawChart(cat, enrolls, unenrolls, coursename);
 				
 			});
 
@@ -44,7 +46,7 @@
 
 
 
-function drawChart(cat, enrolls, unenrolls){
+function drawChart(cat, enrolls, unenrolls, coursename){
 	$('#container').highcharts({
         chart: {
             type: 'column'
@@ -53,7 +55,7 @@ function drawChart(cat, enrolls, unenrolls){
             text: 'Enrollment history'
         },
         subtitle: {
-            text: 'Course name'
+            text: coursename
         },
         xAxis: {
             categories: cat,
