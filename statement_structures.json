@@ -1,0 +1,1231 @@
+// Statements as returned from Learning Locker.
+
+
+
+
+// Teacher created course
+
+{
+    "actor": {
+        "name": "Raimond Koitsalu",
+        "mbox": "mailto:koitsalu@tlu.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/create",
+        "display": {
+            "en-US": "created"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "8eb0dc3f-2d79-47dd-b95f-5a1c96f18817",
+    "stored": "2014-10-23T08:19:33.900000+00:00",
+    "timestamp": "2014-10-23T08:19:33.900000+00:00"
+},
+{
+    "actor": {
+        "name": "Raimond Koitsalu",
+        "mbox": "mailto:koitsalu@tlu.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/create",
+        "display": {
+            "en-US": "created"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=1",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 1"
+            }
+        }
+    },
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "b66a2ae2-33a8-4861-ab0f-95bb228debe6",
+    "stored": "2014-10-24T11:53:15.040000+00:00",
+    "timestamp": "2014-10-24T11:53:15.040000+00:00"
+},
+{
+    "actor": {
+        "name": "Raimond Koitsalu",
+        "mbox": "mailto:koitsalu@tlu.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/create",
+        "display": {
+            "en-US": "created"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=1",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 1"
+            }
+        }
+    },
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "beeaacaa-c6c0-4a2c-8372-f6c9e9961193",
+    "stored": "2014-10-24T11:06:09.550000+00:00",
+    "timestamp": "2014-10-24T11:06:09.550000+00:00"
+},
+{
+    "actor": {
+        "name": "Raimond Koitsalu",
+        "mbox": "mailto:koitsalu@tlu.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/create",
+        "display": {
+            "en-US": "created"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=3",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 3"
+            }
+        }
+    },
+    "timestamp": "2014-10-15T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "1f3399d1-0ee4-4f9c-83a6-99cb769d568d",
+    "stored": "2014-10-23T08:25:46.790000+00:00"
+},        
+	{
+    "actor": {
+        "name": "Raimond Koitsalu",
+        "mbox": "mailto:koitsalu@tlu.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/create",
+        "display": {
+            "en-US": "created"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=1",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 1"
+            }
+        }
+    },
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "1a77a8f5-4d76-4d87-959e-dd7774cdee77",
+    "stored": "2014-10-23T08:19:01.850000+00:00",
+    "timestamp": "2014-10-23T08:19:01.850000+00:00"
+}
+
+//Student joined course
+
+{
+    "actor": {
+        "name": "Test Student 19",
+        "mbox": "mailto:19.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-25T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "6731bad7-d975-4b38-b887-de23ea90db74",
+    "stored": "2014-10-23T09:07:04.660000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 18",
+        "mbox": "mailto:18.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-31T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "ebbe524c-c26e-41eb-a103-539643ec0331",
+    "stored": "2014-10-23T09:07:04.410000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 17",
+        "mbox": "mailto:17.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-16T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "3add57ca-d3b9-4c20-9c82-1b5f5b5219be",
+    "stored": "2014-10-23T09:07:04.150000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 16",
+        "mbox": "mailto:16.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-30T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "130adf47-72c2-4f14-9264-1a75c540ef3f",
+    "stored": "2014-10-23T09:07:03.890000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 14",
+        "mbox": "mailto:14.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-11T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "5662a7ca-4882-42d5-863e-6ddedadd28ab",
+    "stored": "2014-10-23T09:07:03.390000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 12",
+        "mbox": "mailto:12.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-31T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "09ddfbaa-269d-44fb-9cc0-880e3ae96412",
+    "stored": "2014-10-23T09:07:02.860000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 9",
+        "mbox": "mailto:9.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-13T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "30aa59ec-4dca-4d61-b797-0b66fcbd2bab",
+    "stored": "2014-10-23T09:07:02.060000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 7",
+        "mbox": "mailto:7.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-15T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "2dfee1ed-548f-4c6a-948a-61fc801e87cf",
+    "stored": "2014-10-23T09:07:01.360000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 6",
+        "mbox": "mailto:6.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-17T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "4c13c51a-04dd-4d9f-ac96-bf85da970b2d",
+    "stored": "2014-10-23T09:07:00.890000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 4",
+        "mbox": "mailto:4.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-24T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "73e69a66-37bf-44b9-87b0-d1bbff5cfd9b",
+    "stored": "2014-10-23T09:06:59.950000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 3",
+        "mbox": "mailto:3.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-13T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "d1f3c478-e04d-4d5d-8ed5-0e2d4418e13a",
+    "stored": "2014-10-23T09:06:59.160000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 2",
+        "mbox": "mailto:2.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-17T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "fa2092ee-9bd6-49b2-b894-19643723f738",
+    "stored": "2014-10-23T09:06:58.730000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 1",
+        "mbox": "mailto:1.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-19T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "5d277ba6-26b9-40eb-b066-2b85674bad4a",
+    "stored": "2014-10-23T09:06:58.280000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 0",
+        "mbox": "mailto:0.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/join",
+        "display": {
+            "en-US": "joined"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-27T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "7bbe179d-1597-4359-91f3-b587c47966ac",
+    "stored": "2014-10-23T09:06:57.980000+00:00"
+},
+
+
+
+
+// Student left course.
+
+        
+        
+{
+    "actor": {
+        "name": "Test Student 19",
+        "mbox": "mailto:19.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-24T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "f9224378-2d02-4e85-b361-4f354f0f14d6",
+    "stored": "2014-10-23T12:10:06.890000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 18",
+        "mbox": "mailto:18.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-02T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "3721032a-dc11-44d0-9da8-ac5d46a7d053",
+    "stored": "2014-10-23T12:10:06.650000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 17",
+        "mbox": "mailto:17.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-14T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "8fe36b83-28e9-4c3f-8607-560288fb0751",
+    "stored": "2014-10-23T12:10:06.420000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 16",
+        "mbox": "mailto:16.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-25T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "3cdae5df-d735-4202-ad88-f4e8a448b8a0",
+    "stored": "2014-10-23T12:10:06.140000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 15",
+        "mbox": "mailto:15.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-16T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "d9dbf03e-9c34-4c2d-b5af-c808f28e1a53",
+    "stored": "2014-10-23T12:10:05.890000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 14",
+        "mbox": "mailto:14.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-09T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "e4887b66-3bd5-448e-9209-bbe3841a3fad",
+    "stored": "2014-10-23T12:10:05.660000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 13",
+        "mbox": "mailto:13.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-16T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "6663882b-2e38-4c77-b4c3-be6d04fc23ab",
+    "stored": "2014-10-23T12:10:05.430000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 12",
+        "mbox": "mailto:12.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-05T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "f6a7222d-c11f-48ae-93bc-5d023d5f2013",
+    "stored": "2014-10-23T12:10:05.180000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 11",
+        "mbox": "mailto:11.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-05T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "c2af3bb8-e12b-4585-90d7-bc85331af8f0",
+    "stored": "2014-10-23T12:10:04.940000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 10",
+        "mbox": "mailto:10.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-29T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "f42a7210-bceb-45e7-ae5c-58d6b8a79a2e",
+    "stored": "2014-10-23T12:10:04.670000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 9",
+        "mbox": "mailto:9.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-19T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "8ae1cdf4-0ecd-43ac-afe5-d21552637771",
+    "stored": "2014-10-23T12:10:04.430000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 8",
+        "mbox": "mailto:8.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-03T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "9d148046-1aae-408a-b12b-dca61e200896",
+    "stored": "2014-10-23T12:10:04.160000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 7",
+        "mbox": "mailto:7.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-27T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "cb284556-78bf-4291-a1be-2123ac057a7c",
+    "stored": "2014-10-23T12:10:03.900000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 6",
+        "mbox": "mailto:6.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-04T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "a2aff13c-7493-4f4b-9964-a06cdf425d5d",
+    "stored": "2014-10-23T12:10:03.640000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 5",
+        "mbox": "mailto:5.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-01T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "76ade7c7-499c-41b6-a0d6-8baf340a8f4d",
+    "stored": "2014-10-23T12:10:03.370000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 4",
+        "mbox": "mailto:4.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-31T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "7f325772-d4f2-4795-a704-f1b6f27d6e27",
+    "stored": "2014-10-23T12:10:03.120000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 3",
+        "mbox": "mailto:3.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-05T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "d1fccd4a-d0a6-4ea3-81a0-a45114c8f89c",
+    "stored": "2014-10-23T12:10:02.860000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 2",
+        "mbox": "mailto:2.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-01T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "82554c7e-5a2c-4ef5-bf15-ceb102b8b207",
+    "stored": "2014-10-23T12:10:02.590000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 1",
+        "mbox": "mailto:1.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-06T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "ae0ef641-b6d1-4683-b8dc-eddb222d2500",
+    "stored": "2014-10-23T12:10:02.120000+00:00"
+},
+{
+    "actor": {
+        "name": "Test Student 0",
+        "mbox": "mailto:0.student@test.ee",
+        "objectType": "Agent"
+    },
+    "verb": {
+        "id": "http://activitystrea.ms/schema/1.0/leave",
+        "display": {
+            "en-US": "left"
+        }
+    },
+    "object": {
+        "id": "http://www.kursused.jee/courses.php?cor=2",
+        "objectType": "Activity",
+        "definition": {
+            "type": "http://adlnet.gov/expapi/activities/course",
+            "name": {
+                "en-GB": "Example course 2"
+            }
+        }
+    },
+    "timestamp": "2014-10-02T08:19:01.850000+00:00",
+    "authority": {
+        "name": "",
+        "mbox": "mailto:raimond.koitsalu@gmail.com",
+        "objectType": "Agent"
+    },
+    "id": "1dde377e-2d3e-41f7-a48c-f79434e18705",
+    "stored": "2014-10-23T12:10:01.580000+00:00"
+},
+
+        
+        
+       
