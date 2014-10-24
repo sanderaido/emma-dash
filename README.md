@@ -10,4 +10,4 @@ Uses:
 
 Notes:
 - The fact that if a teacher decides to reopen a course and is able to see, for example enrollments from last year, is not a bug. It is a feature ;)
-- See[sdas](statement_structures.json) for example statement strucure
+- See [statement_structure.json](statement_structures.json) for example statement strucure
