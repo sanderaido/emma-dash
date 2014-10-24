@@ -1,8 +1,20 @@
 <?php
+$agent = 'koitsalu@tlu.ee';
+  $curl = curl_init();
+  curl_setopt($curl, CURLOPT_URL, 'http://localhost:8888/ll/learninglocker/public/data/xAPI/statements?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/create');
+  curl_setopt($curl, CURLOPT_USERPWD, 'a5c960f66ebb0013e1152504801b70770e342580:41100a94622766b876e918d87c316d34ebbf3f7b');
+  curl_setopt($curl, CURLOPT_HEADER, 'X-Experience-API-Version: 1.0.1');
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+  $data = curl_exec($curl);
+  $data = json_decode($data);
+  curl_close($curl);
 
-$endpoint = '';
-$username = '';
-$password = '';
+  $courses = array();
+  foreach($data->statements as $statement){
+    if($statement->object->definition->type == 'http://adlnet.gov/expapi/activities/course'){
+      $courses[] = $statement;
+    }
+  }
 
 ?>
 
@@ -17,7 +29,7 @@ $password = '';
 
     <!-- Bootstrap -->
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-   
+   <link href="datepicker/css/datepicker.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -27,73 +39,60 @@ $password = '';
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-    <script src="emmaDashJs.js"></script>
-        <script src="Highcharts/js/highcharts.js"></script>
+    <script type="text/javascript">
+      var appObject = {};
+      appObject.Coursesjs = <?php echo json_encode($courses);?>;
+      appObject.Agent = <?php echo json_encode($agent);?>;
+    </script>
+    <script src="emmadashboard.js"></script>
+    <script src="Highcharts/js/highcharts.js"></script>
     <script src="Highcharts/js/modules/exporting.js"></script>
+    <script src="datepicker/js/bootstrap-datepicker.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   </head>
   <body>
-      
+  <div class="container-fluid">     
       <div class="row">
-
-      <!-- Navigation Buttons -->
-      <div class="col-md-3">
-        <ul class="nav nav-pills nav-stacked" id="navigation">
-          <li class="active"><a href="#la">Learning Analytics</a></li>
-          <li><a href="#cs">Course Statistics</a></li>          
-        </ul>
-      </div>
-
       <!-- Content -->
-      <div class="col-md-9">
-        <div class="tab-content">
-          <div class="tab-pane active" id="la">
+      <div class="col-md-9">              
             <h1>Learning Analytics</h1>
-
             <form class="form-horizontal" role="form">
               <div class="form-group">
                 <label for="inputCourse" class="col-sm-2 control-label">Course:</label>
                 <div class="col-sm-10">
-                  <select class="form-control">
+                  <select class="form-control course-name">
                     <option>Course name</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    <?php 
+                      foreach($courses as $course){
+                        echo '<option data-url="'.$course->object->id.'">'.$course->object->definition->name->{'en-GB'}.'</option>';
+                      }
+                    ?>
                   </select>
                 </div>
               </div>
               <div class="form-group">
-                <label for="inputType" class="col-sm-2 control-label">Course:</label>
+                <label for="inputType" class="col-sm-2 control-label">Type:</label>
                 <div class="col-sm-10">
                   <select class="form-control">
-                    <option>Enrollment Activity</option>
-                    <option>Login - Logut activity</option>
-                    <option>Page views</option>                    
+                    <option>Enrollment Activity</option>                   
                   </select>
                 </div>
               </div>
               <div class="form-group">
-                <label for="inputDate" class="col-sm-2 control-label">Start:</label>
+                <label for="inputDate" class="col-sm-2 control-label">Month:</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control" /> 
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="inputDate" class="col-sm-2 control-label">End:</label>
-                <div class="col-sm-10">
-                <input type="date" class="form-control" /> 
+                <input type="date" class="form-control datepicker month" readonly/>
                 </div>
               </div>
             </form>
+          <button type="button" class="btn btn-primary fetch">Fetch data</button>
           
-
-          <div class="row">STATIC VIEW</div>
           <div class="chart-container"></div>
             <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
             <br>
+    <div class="summary">
+      <div class="container-fluid">
             <div class="row">
               <div class="chart-description">
                 <div class="panel panel-default">
@@ -101,22 +100,16 @@ $password = '';
                     <h3 class="panel-title">Enroll - Unenroll</h3>
                   </div>
                   <div class="panel-body">
-                    <div class="total-enrollments"> new students have enrolled to course</div>
-                    <div class="total-unenrollments"> students have unenrolled from course</div>
+                    Please Fetch data to populate this summary box                   
                   </div>
                 </div>
               </div>
-            </div>
-        </div>
-          <div class="tab-pane" id="cs">
-            <h1>Course Statistics</h1>
-
-          </div>          
-        </div>
+            </div> 
+      </div>  
+    </div>  
       </div>
-
     </div>
-
-    
+    <div id="log"></div>
+    </div>
   </body>
 </html>
