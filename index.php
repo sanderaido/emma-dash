@@ -16,6 +16,14 @@ $agent = 'koitsalu@tlu.ee';
     }
   }
 
+  $uniquecourses = array();
+
+foreach($courses as $course){
+  if(!array_key_exists($course->object->id, $uniquecourses)){
+    $uniquecourses[$course->object->id] = $course;
+  }
+}
+
 ?>
 
 
@@ -64,7 +72,7 @@ $agent = 'koitsalu@tlu.ee';
                   <select class="form-control course-name">
                     <option>Course name</option>
                     <?php 
-                      foreach($courses as $course){
+                      foreach($uniquecourses as $course){
                         echo '<option data-url="'.$course->object->id.'">'.$course->object->definition->name->{'en-GB'}.'</option>';
                       }
                     ?>
