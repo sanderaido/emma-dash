@@ -6,12 +6,41 @@
 			$('.datepicker-months').parent().css('display', 'none');
 		});
 
+		$('.month').keydown(function(){
+			return false;
+		});
 
-
-		$('.fetch').on('click', function(){
+		$('.fetch').on('click', function(e){
+			var hasError = false;
 			var courseurl = $('.course-name').find(':selected').data('url');
-			var coursename = $('.course-name').find(':selected').val();			
+			if(typeof courseurl === 'undefined'){
+				$('.course-name').parents('.form-group').addClass('has-error');
+				hasError = true;
+			}else{
+				if($('.course-name').parents('.form-group').hasClass('has-error')){
+					$('.course-name').parents('.form-group').removeClass('has-error');
+				}
+			}
+			if($('.month').val() === ''){
+				$('.month').parents('.form-group').addClass('has-error');
+				hasError = true;
+			}else{
+				if($('.month').parents('.form-group').hasClass('has-error')){
+					$('.month').parents('.form-group').removeClass('has-error');
+				}
+			}
 
+			if (hasError) {
+				return;
+			}
+			
+			if($('.container-loader').length!=0){
+				$('.container-loader').css('display', 'inline');
+			}else{
+				$('#container').html('<img class="container-loader" src="ajax-loader.gif">');
+				$('.container-loader').css('display', 'inline');
+			}
+			var coursename = $('.course-name').find(':selected').val();			
 			var request = $.ajax({
 				type: 'GET',
 				dataType: 'json',
@@ -31,13 +60,21 @@
 				var cat = [];
 				var enrolls = [];
 				var unenrolls = [];
-				$.each(json, function(index, value){					
-					cat.push(value['date']);
-					enrolls.push(value['enrollments']);
-					unenrolls.push(value['unenrollments']);
-				});
-				drawChart(cat, enrolls, unenrolls, coursename);
-				
+				if(json.result == 'empty'){	
+					$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
+					$('.summary').css('display', 'none');
+				}else{
+					$.each(json, function(index, value){					
+						cat.push(value['date']);
+						enrolls.push(value['enrollments']);
+						unenrolls.push(value['unenrollments']);
+					});
+						
+					drawEnrollmentChart(cat, enrolls, unenrolls, coursename);
+					if($('.summary').is(":hidden")){
+						$('.summary').css('display', 'inline');
+					}
+				}
 			});
 
 			
@@ -45,7 +82,7 @@
 
 
 
-function drawChart(cat, enrolls, unenrolls, coursename){
+function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
 	$('#container').highcharts({
         chart: {
             type: 'column'
@@ -56,6 +93,12 @@ function drawChart(cat, enrolls, unenrolls, coursename){
         subtitle: {
             text: coursename
         },
+        // If needed, bar colours can be defined here
+        
+        // colors: [
+        // 	'#00ff00',
+        // 	'#ff0000'
+        // ],
         xAxis: {
             categories: cat,
             labels: {

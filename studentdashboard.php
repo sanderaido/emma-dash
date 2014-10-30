@@ -2,11 +2,11 @@
 
 require_once('config.php');
 
-$agent = 'koitsalu@tlu.ee';
+$agent = '19.student@test.ee';
 
 
   $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/create');
+  curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/join');
   curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
   curl_setopt($curl, CURLOPT_HEADER, XAPIVERSIONHEADER);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
@@ -28,6 +28,8 @@ foreach($courses as $course){
     $uniquecourses[$course->object->id] = $course;
   }
 }
+
+
 
 ?>
 
@@ -58,15 +60,15 @@ foreach($courses as $course){
       appObject.Coursesjs = <?php echo json_encode($courses);?>;
       appObject.Agent = <?php echo json_encode($agent);?>;
     </script>
-    <script src="emmadashboard.js"></script>
+    <script src="emmastudentdashboard.js"></script>
     <script src="Highcharts/js/highcharts.js"></script>
     <script src="Highcharts/js/modules/exporting.js"></script>
     <script src="datepicker/js/bootstrap-datepicker.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   </head>
-  <body>
-  <div class="container-fluid">     
+
+<div class="container-fluid">     
       <div class="row">
       <!-- Content -->
       <div class="col-md-9">              
@@ -89,14 +91,21 @@ foreach($courses as $course){
                 <label for="inputType" class="col-sm-2 control-label">Type:</label>
                 <div class="col-sm-10">
                   <select class="form-control">
-                    <option>Enrollment Activity</option>                   
+                    <option>Related Learning Materials</option>
+                    <option>Learning Material views</option>
                   </select>
                 </div>
               </div>
               <div class="form-group">
-                <label for="inputDate" class="col-sm-2 control-label">Month:</label>
+                <label for="inputDate" class="col-sm-2 control-label">Start:</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control datepicker month" />
+                <input type="date" class="form-control datepicker start" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputDate" class="col-sm-2 control-label">End:</label>
+                <div class="col-sm-10">
+                <input type="date" class="form-control datepicker end" />
                 </div>
               </div>
             </form>

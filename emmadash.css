@@ -1,0 +1,17 @@
+#container{
+	text-align: center;
+}
+
+.container-loader {
+	position: relative;
+	top: 150px;
+	display: none;
+}
+
+.jumbo-contain{
+	top:75px;
+}
+
+.summary{
+	display: none;
+}
