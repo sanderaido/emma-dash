@@ -90,22 +90,22 @@ foreach($courses as $course){
               <div class="form-group">
                 <label for="inputType" class="col-sm-2 control-label">Type:</label>
                 <div class="col-sm-10">
-                  <select class="form-control">
-                    <option>Related Learning Materials</option>
-                    <option>Learning Material views</option>
+                  <select class="form-control view-type">
+                    <option data-type="relatedViewsStudent">Related Learning Materials</option>
+                    <option data-type="materialViewsStudent">Learning Material views</option>
                   </select>
                 </div>
               </div>
               <div class="form-group">
                 <label for="inputDate" class="col-sm-2 control-label">Start:</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control datepicker start" />
+                <input type="text" class="form-control datepicker start" />
                 </div>
               </div>
               <div class="form-group">
                 <label for="inputDate" class="col-sm-2 control-label">End:</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control datepicker end" />
+                <input type="text" class="form-control datepicker end" />
                 </div>
               </div>
             </form>

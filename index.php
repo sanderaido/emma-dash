@@ -96,7 +96,7 @@ foreach($courses as $course){
               <div class="form-group">
                 <label for="inputDate" class="col-sm-2 control-label">Month:</label>
                 <div class="col-sm-10">
-                <input type="date" class="form-control datepicker month" />
+                <input type="text" class="form-control datepicker month" />
                 </div>
               </div>
             </form>

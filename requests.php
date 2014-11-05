@@ -17,10 +17,37 @@ switch($requestType){
 		fetchStudentRelatedViewsData($params);
 
 	break;
-}
-function fetchStudentRelatedViewsData($params){
-	//error_log(print_r($params, true));
+	case('materialViewsStudent'):
 
+		fetchStudentMaterialViewsData($params);
+
+	break;
+}
+
+function super_unique($array)
+{
+  $result = array_map("unserialize", array_unique(array_map("serialize", $array)));
+
+  foreach ($result as $key => $value)
+  {
+    if ( is_array($value) )
+    {
+      $result[$key] = super_unique($value);
+    }
+  }
+
+  return $result;
+}
+
+function divide($a, $b){
+	if($a==0 || $b==0){
+		return 0;
+	}else{
+		return $a/$b;
+	}
+}
+
+function fetchStudentMaterialViewsData($params){
 	$start = explode('-', $params['start']);
 	$until = explode('-', $params['end']);
 	$course = $params['activity'];
@@ -28,71 +55,183 @@ function fetchStudentRelatedViewsData($params){
 
 	$startdate = date(DATE_ATOM, strtotime('last monday', mktime(0,0,0, $start[1], $start[0], $start[2])));
 	$untildate = date(DATE_ATOM, strtotime('next sunday', mktime(23,59,59,$until[1], $until[0], $until[2])));
-	
-
-	//$weeks = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
+	// error_log(print_r($startdate, true));
+	// error_log(print_r($untildate, true));
 
 
 	$urlparams = setAllCourseDataParams($startdate, $untildate, $course);
 
 	$coursedata = getData($urlparams);
-	$createcourse = array();
-	//$externalmaterials = array();
-	//$internalmaterials = array();
-	$mypagevisits = array();
-	$pagevisits = array();
-	$helper = array();
+	$coursedata = super_unique($coursedata);
+
+	/*usort($coursedata, function($a, $b){
+		return strtotime($a->timestamp) - strtotime($b->timestamp);
+	});*/
+
+	//$urlparams = setAllCourseMembersParams($course);
+
+	$weeksnumber = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
+	$weeks = array();
+	foreach(range(0,$weeksnumber-1) as $number){		
+		$first = date(DATE_ATOM, strtotime('+'.$number.' Week', strtotime($startdate)));
+		$last = date(DATE_ATOM, strtotime('next monday', strtotime($first)));
+		$weeks['Week '.($number+1)]['first-day'] = $first;
+		$weeks['Week '.($number+1)]['last-day'] = $last;
+		$weeks['Week '.($number+1)]['myinternal'] = 0;
+		$weeks['Week '.($number+1)]['myexternal'] = 0;
+		$weeks['Week '.($number+1)]['courseinternal'] = 0;
+		$weeks['Week '.($number+1)]['courseexternal'] = 0;
+	}
+	$data = array();
+
+
+	$emptyresponse = true;
+
+	//$uniqueviewers = array('mailto:'.$params['agent']);
+	$uniqueviewers = array();
+
 	foreach($coursedata as $statement){
 		if($statement->verb->id == 'http://activitystrea.ms/schema/1.0/visited'){
-			if(strtotime($statement->timestamp)>strtotime($startdate) && strtotime($statement->timestamp)<strtotime($untildate)){
-				$pagevisits[] = $statement->object->id;
-				$helper[$statement->object->id] = array('name' => $statement->object->definition->name->{'en-GB'});
-				if($statement->actor->mbox == 'mailto:'.$params['agent']){
-					$mypagevisits[] = $statement->object->id;
+			foreach($weeks as &$week){
+				if($statement->timestamp>($week['first-day']) && $statement->timestamp<($week['last-day'])){
+					if(isset($statement->object->definition->type) && $statement->object->definition->type == 'http://adlnet.gov/expapi/activities/link'){
+						if($statement->actor->mbox == 'mailto:'.$params['agent']){
+							$week['myexternal']+=1;
+							$emptyresponse = false;
+						}else{
+							if(!in_array($statement->actor->mbox, $uniqueviewers)){
+								$uniqueviewers[] = $statement->actor->mbox;
+							}
+							$week['courseexternal']+=1;
+							$emptyresponse = false;
+						}
+					}else{
+						if($statement->actor->mbox == 'mailto:'.$params['agent']){
+							$week['myinternal']+=1;
+							$emptyresponse = false;
+						}else{
+							if(!in_array($statement->actor->mbox, $uniqueviewers)){
+								$uniqueviewers[] = $statement->actor->mbox;
+							}
+							$week['courseinternal']+=1;
+							$emptyresponse = false;
+						}
+					}					
 				}
 			}
 		}
 	}
 
-	unset($coursedata);
 
+	$pagevisits = fetchStudentRelatedViewsData($params, false);
 	
-	$myvisitcounts = array_count_values($mypagevisits);
-	asort($myvisitcounts);
-	$myvisitcounts = array_reverse($myvisitcounts);
-	$pagevisitcounts = array_count_values($pagevisits);
-	asort($pagevisitcounts);
-	$pagevisitcounts = array_reverse($pagevisitcounts);
 
-	$myvisits = array();
-	foreach($myvisitcounts as $key => $value){
-		$myvisits[] = array(
-			'name' => $helper[$key]['name'],
-			'url' => $key,
-			'count' => $value,
-		);
-	}
-	
-	$pagevisits = array();
-	foreach($pagevisitcounts as $key => $value){
-		$pagevisits[] = array(
-			'name' => $helper[$key]['name'],
-			'url' => $key,
-			'count' => $value,
-		);
-	}
 
-	if(empty($myvisits) && empty($pagevisits)){
+
+	if($emptyresponse){
 		$result = array(
 			'result' => 'empty',
 		);
 		echo json_encode($result);
 	}else{
+		foreach($weeks as &$week){
+			$week['courseinternal'] = divide($week['courseinternal'],count($uniqueviewers));
+			$week['courseexternal'] = divide($week['courseexternal'],count($uniqueviewers));
+		}
+		$response = array($pagevisits, $weeks);
+		echo json_encode($response);
+	}
+}
 
-		$data = array('myvisits' => $myvisits, 'othervisits' => $pagevisits);
 
 
-		echo json_encode($data);
+function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
+	//error_log(print_r($params, true));
+	
+		$start = explode('-', $params['start']);
+		$until = explode('-', $params['end']);
+		$course = $params['activity'];
+
+
+		$startdate = date(DATE_ATOM, strtotime('last monday', mktime(0,0,0, $start[1], $start[0], $start[2])));
+		$untildate = date(DATE_ATOM, strtotime('next sunday', mktime(23,59,59,$until[1], $until[0], $until[2])));
+		
+
+		//$weeks = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
+
+
+		$urlparams = setAllCourseDataParams($startdate, $untildate, $course);
+
+		$coursedata = getData($urlparams);
+		//$createcourse = array();
+
+		//$externalmaterials = array();
+		//$internalmaterials = array();
+
+		$mypagevisits = array();
+		$pagevisits = array();
+		$helper = array();
+		$counter = 0;
+		$coursedata = super_unique($coursedata);
+		foreach($coursedata as $statement){
+			$counter++;
+			if($statement->verb->id == 'http://activitystrea.ms/schema/1.0/visited'){
+				if(strtotime($statement->timestamp)>strtotime($startdate) && strtotime($statement->timestamp)<strtotime($untildate)){			
+					$helper[$statement->object->id] = array('name' => $statement->object->definition->name->{'en-GB'});
+					if($statement->actor->mbox == 'mailto:'.$params['agent']){
+						$mypagevisits[] = $statement->object->id;
+						
+					}else{
+						$pagevisits[] = $statement->object->id;	
+
+					}
+				}
+			}
+		}
+		
+		unset($coursedata);
+
+		$myvisitcounts = array_count_values($mypagevisits);
+		//error_log(print_r($pagevisits, true));
+		asort($myvisitcounts);
+		$myvisitcounts = array_reverse($myvisitcounts);
+		$pagevisitcounts = array_count_values($pagevisits);
+		asort($pagevisitcounts);
+		
+		$pagevisitcounts = array_reverse($pagevisitcounts);
+
+		$myvisits = array();
+		foreach($myvisitcounts as $key => $value){
+			$myvisits[] = array(
+				'name' => $helper[$key]['name'],
+				'url' => $key,
+				'count' => $value,
+			);
+		}
+		
+		$pagevisits = array();
+		foreach($pagevisitcounts as $key => $value){
+			$pagevisits[] = array(
+				'name' => $helper[$key]['name'],
+				'url' => $key,
+				'count' => $value,
+			);
+		}
+	if($ajaxcall){	
+		if(empty($myvisits) && empty($pagevisits)){
+			$result = array(
+				'result' => 'empty',
+			);
+			echo json_encode($result);
+		}else{
+			
+			$data = array('myvisits' => $myvisits, 'othervisits' => $pagevisits);
+
+			echo json_encode($data);
+		}
+	}
+	else{
+		return $pagevisits;
 	}
 }
 
@@ -187,8 +326,9 @@ function getData($urlparams){
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$response = curl_exec($curl);
 
-	$response = json_decode($response);	
+	$response = json_decode($response);
 	$data = $response->statements;
+	//error_log(print_r($data, true));
 	curl_close($curl);
 	return $data;
 }
