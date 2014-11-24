@@ -112,11 +112,15 @@
 
 
 function drawMaterialViewsChart(json){
-	
+	$('#container').html();
 	var fortable = json[0];
 	var forchart = json[1];
 	var categories = [];
 	var myinternal = [];
+	var mytotalinternal = 0;
+	var mytotalexternal = 0;
+	var coursetotalinternal = 0;
+	var coursetotalexternal = 0;
 	var myexternal = [];
 	var courseinternal = [];
 	var courseexternal = [];
@@ -126,7 +130,18 @@ function drawMaterialViewsChart(json){
 		myexternal.push(value.myexternal);
 		courseinternal.push(value.courseinternal);
 		courseexternal.push(value.courseexternal);
+		mytotalinternal+=value.myinternal;
+		mytotalexternal+=value.myexternal;
+		coursetotalinternal+=value.courseinternal;
+		coursetotalexternal += value.courseexternal;
 	});
+
+	difference = (coursetotalinternal+coursetotalexternal)-(mytotalexternal+mytotalinternal);
+	var moreorless = 'less';
+	if(difference<0){
+		moreorless = 'more';
+		difference = difference*(-1);
+	}
 	$('#container').highcharts({
 
         chart: {
@@ -181,8 +196,12 @@ function drawMaterialViewsChart(json){
             stack: 'course'
         }]
     });
+	$('.summary').css('display', 'inline');
+	$('.summary .panel-body').html('You have accessed '+(mytotalexternal+mytotalinternal)+' learning materials during the seleceted period. '+mytotalexternal+' of these are external materials and '+mytotalinternal+' internal. That is '+(difference)+' materials '+moreorless+' than the average in current course.');
+	
 
-	var tablehead = '<h3>Most popular resources by course</h3><table class="table popular-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr><thead>';
+
+	var tablehead = '<h3>Most popular resources by course (does not include my views)</h3><table class="table popular-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr><thead>';
 	var tablebody = '';
 	var tablefooter = '</table>';
 
@@ -191,11 +210,15 @@ function drawMaterialViewsChart(json){
 		tablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';		
 		counter++;
 	});
-	$('#container').append(tablehead+tablebody+tablefooter);
+
+	$('.pop-resource-table').html(tablehead+tablebody+tablefooter);
+
 
 }
 function drawRelatedViewsTables(json){
-	
+	$('#container').html('');
+	$('.pop-resource-table').html('');
+	$('.summary').html('');
 	var mytablehead= '<h3>Most popular resources by you</h3><table class="table my-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr></thead>';
 	var mytablebody = '';
 	var mytablefooter = '</table>';

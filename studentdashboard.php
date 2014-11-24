@@ -122,7 +122,7 @@ foreach($courses as $course){
               <div class="chart-description">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <h3 class="panel-title">Enroll - Unenroll</h3>
+                    <h3 class="panel-title">Material views</h3>
                   </div>
                   <div class="panel-body">
                     Please Fetch data to populate this summary box                   
@@ -131,7 +131,8 @@ foreach($courses as $course){
               </div>
             </div> 
       </div>  
-    </div>  
+    </div>
+    <div class="pop-resource-table"></div>
       </div>
     </div>
     <div id="log"></div>

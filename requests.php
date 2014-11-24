@@ -24,6 +24,8 @@ switch($requestType){
 	break;
 }
 
+
+// http://php.net/manual/en/function.array-unique.php#97285
 function super_unique($array)
 {
   $result = array_map("unserialize", array_unique(array_map("serialize", $array)));
