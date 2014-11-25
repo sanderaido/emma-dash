@@ -18,11 +18,15 @@ Instructions:
 - Right now the users account is hardcoded in [index.php](index.php) as $agent. This should be the logged in users e-mail address.
 - Make sure everything is in place from the "Uses" part in this readme(except twitter bootstrap, that comes from cdn).
 - Make sure your xAPI statements actor, verb and object correspond to [these](statement_structures.json).
+- For student view, please use studentdashboard.php
 
 Statements Implemented:
 - Teacher creates course
 - Student joins course
 - Student leaves course
+- Actor visits material(internal/external)
  
 Dashboard views implemented:
 - [Enrollment history](screenshots/dashboard-view.png)
+- Student Related Views
+- Student Material Views
