@@ -1,6 +1,23 @@
-(function($){	
+(function($){
 
-	$(document).ready(function(){		
+	$(document).ready(function(){
+		var checkDates = true;
+		$('.view-type').on('change', function(){
+			if($('.view-type').find(':selected').data('type') == 'progressStudent'){
+				$('.start-group').css('display', 'none');
+				$('.end-group').css('display', 'none');
+				checkDates = false;
+			}else{
+				checkDates = true;
+				if($('.start-group').is(':hidden')){
+					$('.start-group').css('display', 'block');
+				}
+				if($('.end-group').is(':hidden')){
+					$('.end-group').css('display', 'block');
+				}
+			}
+		});
+
 		var options = {format:'dd-mm-yyyy',weekStart:1,viewMode:0, minViewMode:0};
 		$('.datepicker').datepicker(options).on('changeDate', function(ev){
 			$('.datepicker-months').parent().css('display', 'none');
@@ -22,16 +39,20 @@
 				}
 			}
 			if($('.start').val() === ''){
-				$('.start').parents('.form-group').addClass('has-error');
-				hasError = true;
+				if(checkDates == true){
+					$('.start').parents('.form-group').addClass('has-error');
+					hasError = true;
+				}
 			}else{
 				if($('.start').parents('.form-group').hasClass('has-error')){
 					$('.start').parents('.form-group').removeClass('has-error');
 				}
 			}
 			if($('.end').val() === ''){
-				$('.end').parents('.form-group').addClass('has-error');
-				hasError = true;
+				if(checkDates == true){
+					$('.end').parents('.form-group').addClass('has-error');
+					hasError = true;
+				}
 			}else{
 				if($('.end').parents('.form-group').hasClass('has-error')){
 					$('.end').parents('.form-group').removeClass('has-error');
@@ -41,7 +62,7 @@
 			if (hasError) {
 				return;
 			}
-			
+
 			if($('.container-loader').length!=0){
 				$('.container-loader').css('display', 'inline');
 			}else{
@@ -49,34 +70,34 @@
 				$('.container-loader').css('display', 'inline');
 			}
 			var coursename = $('.course-name').find(':selected').val();
-			var type = 	$('.view-type').find(':selected').data('type');			
+			var type = 	$('.view-type').find(':selected').data('type');
 			if(type=='relatedViewsStudent'){
 				var request = $.ajax({
 					type: 'GET',
 					dataType: 'json',
 					data: {
-						'type':'relatedViewsStudent',					
+						'type':'relatedViewsStudent',
 						'start': $('.start').val(),
 						'end': $('.end').val(),
 						'activity': courseurl,
 						'agent': appObject.Agent
 					},
 					url: 'requests.php'
-					
+
 				});
 				request.fail(function( jqXHR, textStatus ){
 					alert('Request failed ' + textStatus );
-					
-				});			
+
+				});
 				request.done(function(json){
 					//console.log(json);
-					if(json.result == 'empty'){	
+					if(json.result == 'empty'){
 						$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
 						$('.summary').css('display', 'none');
 					}else{
-												
+
 						drawRelatedViewsTables(json);
-						
+
 					}
 				});
 			}
@@ -95,10 +116,10 @@
 				});
 				request.fail(function( jqXHR, textStatus ){
 					alert('Request failed ' + textStatus );
-					
+
 				});
 				request.done(function(json){
-					if(json.result == 'empty'){	
+					if(json.result == 'empty'){
 						$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
 						$('.summary').css('display', 'none');
 					}
@@ -107,9 +128,34 @@
 					}
 				});
 			}
-			
+			if(type=='progressStudent'){
+				var request = $.ajax({
+					type: 'GET',
+					dataType: 'json',
+					data:{
+						'type': 'progressStudent',
+						'activity': courseurl,
+						'agent': appObject.Agent,
+					},
+					url: 'requests.php'
+				});
+				request.fail(function( jqXHR, textStatus){
+					alert('Request failed ' + textStatus );
+				});
+				request.done(function(json){
+					if(json.result == 'empty'){
+						$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
+						$('.summary').css('display', 'none');
+					}else{
+						drawStudentProgress(json);
+					}
+				});
+			}
 		});
 
+function drawStudentProgress(json){
+	$('#container').html(JSON.stringify(json, null, 2));
+}
 
 function drawMaterialViewsChart(json){
 	$('#container').html();
@@ -198,7 +244,7 @@ function drawMaterialViewsChart(json){
     });
 	$('.summary').css('display', 'inline');
 	$('.summary .panel-body').html('You have accessed '+(mytotalexternal+mytotalinternal)+' learning materials during the seleceted period. '+mytotalexternal+' of these are external materials and '+mytotalinternal+' internal. That is '+(difference)+' materials '+moreorless+' than the average in current course.');
-	
+
 
 
 	var tablehead = '<h3>Most popular resources by course (does not include my views)</h3><table class="table popular-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr><thead>';
@@ -207,7 +253,7 @@ function drawMaterialViewsChart(json){
 
 	var counter = 1;
 	$.each(fortable.slice(0,10), function(index, value){
-		tablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';		
+		tablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 
@@ -222,39 +268,39 @@ function drawRelatedViewsTables(json){
 	var mytablehead= '<h3>Most popular resources by you</h3><table class="table my-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr></thead>';
 	var mytablebody = '';
 	var mytablefooter = '</table>';
-	
+
 	var myvisiturls = [];
-	$.each(json.myvisits, function(index, value){		
-		myvisiturls.push(value.url);		
+	$.each(json.myvisits, function(index, value){
+		myvisiturls.push(value.url);
 	});
 	var counter = 1;
 	$.each(json.myvisits.slice(0,10), function(index, value){
-		mytablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';		
+		mytablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 
 	var othertablehead = '<h3>Other students also accessed these materials</h3><table class="table others-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr></thead>';
-	var othertablebody = '';	
+	var othertablebody = '';
 	counter = 1;
 	$.each(json.othervisits.slice(0,10), function(index, value){
 		othertablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td class="visited-url"><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 	$('#container').html(mytablehead+mytablebody+mytablefooter+othertablehead+othertablebody+mytablefooter);
-	
+
 	$('.others-visited-resources .visited-url a').each(function(index, value){
 		if(myvisiturls.indexOf($(this).attr('href'))<0){
-			$(this).parents('tr').addClass('havent-visited');		
+			$(this).parents('tr').addClass('havent-visited');
 		}
 	});
 
 }
-		
-			
-			
 
-		    
-		
+
+
+
+
+
 	});
 
 })(jQuery);

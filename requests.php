@@ -22,6 +22,14 @@ switch($requestType){
 		fetchStudentMaterialViewsData($params);
 
 	break;
+
+	case('progressStudent'):
+		fetchStudentProgressViewData($params);
+	break;
+
+	case('overviewTeacher'):
+		fetchTeacherOverallProgressData($params);
+	break;
 }
 
 
@@ -49,6 +57,146 @@ function divide($a, $b){
 	}
 }
 
+function getCreateStatements($activity){
+	$params = array(
+		'verb' => 'http://activitystrea.ms/schema/1.0/create',
+		'activity' => $activity,
+		'related_activities' => 'true',
+	);
+	$urlparams = http_build_query($params);
+
+	return getData($urlparams);
+}
+
+function getVisitedStatements($unit){
+
+	$params = array(
+		'verb' => 'http://activitystrea.ms/schema/1.0/visited',
+		'activity' => $unit,
+		'related_activities' => 'true',
+	);
+
+	$urlparams = http_build_query($params);
+
+	$response = getData($urlparams);
+	if($response == 'empty'){
+		return 0;
+	}else{
+		 //error_log(print_r($unit, true));
+		// error_log(print_r($response, true));
+		return $response;
+	}
+
+
+}
+
+function getAnsweredAssignmentStatements($unit){
+	$params = array(
+		'verb' => 'http://adlnet.gov/expapi/verbs/answered',
+		'activity' => $unit,
+		'related_activities' => 'true',
+	);
+
+	$urlparams = http_build_query($params);
+
+	$response = getData($urlparams);
+	if($response == 'empty'){
+		return 0;
+	}else{
+		return $response;
+	}
+}
+
+function fetchTeacherOverallProgressData($params){
+
+
+	//Get create statements
+	$createstatements = getCreateStatements($params['activity']);
+
+	$lessonscreated = array();
+	$unitscreated = array();
+	foreach($createstatements as $createstatement){
+		if($createstatement->object->definition->type == 'http://adlnet.gov/expapi/activities/lesson'){
+			$lessonscreated[$createstatement->object->id] = array();
+		}elseif ($createstatement->object->definition->type == 'http://adlnet.gov/expapi/activities/unit') {
+			$unitscreated[] = $createstatement;
+		}
+	}
+	foreach($unitscreated as $unit){
+		$lessonscreated[$unit->context->contextActivities->parent[0]->id][] = $unit->object->id;
+	}
+
+// 	Get unit "visited" statements.
+	foreach($lessonscreated as &$lesson){
+		$lesson['views'] = array();
+		$lesson['answers'] = array();
+		foreach($lesson as $unit){
+
+			if(!is_array($unit)){
+				$tempviews = getVisitedStatements($unit);
+				if(!empty($tempviews)){
+
+					foreach ($tempviews as $tempview) {
+						if(!array_key_exists($tempview->object->id, $lesson['views'])){
+							$lesson['views'][$tempview->object->id] = array(
+								'views' => 1,
+								'name' => $tempview->object->definition->name->{'en-GB'},
+							);
+						}else{
+							$lesson['views'][$tempview->object->id]['views'] += 1;
+						}
+					}
+				}
+				$tempanswers = getAnsweredAssignmentStatements($unit);
+				if(!empty($tempanswers)){
+					foreach($tempanswers as $tempanswer) {
+						if($tempanswer->result->success){
+							if(!array_key_exists($tempanswer->object->id, $lesson['answers'])){
+								$lesson['answers'][$tempanswer->object->id] = array(
+									'answers' => 1,
+									'name' => $tempanswer->object->definition->name->{'en-GB'},
+								);
+							}else{
+								$lesson['answers'][$tempanswer->object->id]['answers'] += 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	$emptyresponse = false;
+	if($emptyresponse){
+		$result = array(
+			'result' => 'empty',
+		);
+
+	}else{
+		$result = $lessonscreated;
+	}
+	echo json_encode($result);
+}
+
+function fetchStudentProgressViewData($params){
+
+	// Get and organise all lessons and units
+	$urlparams = array('activity' => $params['activity'], 'verb' => 'http://activitystrea.ms/schema/1.0/create');
+	$urlparams = http_build_query($urlparams);
+	//error_log(print_r($urlparams, true));
+	$test = getData($urlparams);
+	if(empty($test)){
+		$result = array(
+			'result' => 'empty',
+		);
+		echo json_encode($result);
+	}else{
+		$result = json_encode($test);
+		echo $result;
+	}
+}
+
+
 function fetchStudentMaterialViewsData($params){
 	$start = explode('-', $params['start']);
 	$until = explode('-', $params['end']);
@@ -74,7 +222,7 @@ function fetchStudentMaterialViewsData($params){
 
 	$weeksnumber = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
 	$weeks = array();
-	foreach(range(0,$weeksnumber-1) as $number){		
+	foreach(range(0,$weeksnumber-1) as $number){
 		$first = date(DATE_ATOM, strtotime('+'.$number.' Week', strtotime($startdate)));
 		$last = date(DATE_ATOM, strtotime('next monday', strtotime($first)));
 		$weeks['Week '.($number+1)]['first-day'] = $first;
@@ -118,7 +266,7 @@ function fetchStudentMaterialViewsData($params){
 							$week['courseinternal']+=1;
 							$emptyresponse = false;
 						}
-					}					
+					}
 				}
 			}
 		}
@@ -126,7 +274,7 @@ function fetchStudentMaterialViewsData($params){
 
 
 	$pagevisits = fetchStudentRelatedViewsData($params, false);
-	
+
 
 
 
@@ -149,7 +297,7 @@ function fetchStudentMaterialViewsData($params){
 
 function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 	//error_log(print_r($params, true));
-	
+
 		$start = explode('-', $params['start']);
 		$until = explode('-', $params['end']);
 		$course = $params['activity'];
@@ -157,7 +305,7 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 
 		$startdate = date(DATE_ATOM, strtotime('last monday', mktime(0,0,0, $start[1], $start[0], $start[2])));
 		$untildate = date(DATE_ATOM, strtotime('next sunday', mktime(23,59,59,$until[1], $until[0], $until[2])));
-		
+
 
 		//$weeks = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
 
@@ -166,7 +314,7 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 
 		$coursedata = getData($urlparams);
 		//$createcourse = array();
-
+		error_log(print_r($coursedata, true));
 		//$externalmaterials = array();
 		//$internalmaterials = array();
 
@@ -178,28 +326,28 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 		foreach($coursedata as $statement){
 			$counter++;
 			if($statement->verb->id == 'http://activitystrea.ms/schema/1.0/visited'){
-				if(strtotime($statement->timestamp)>strtotime($startdate) && strtotime($statement->timestamp)<strtotime($untildate)){			
+				if(strtotime($statement->timestamp)>strtotime($startdate) && strtotime($statement->timestamp)<strtotime($untildate)){
 					$helper[$statement->object->id] = array('name' => $statement->object->definition->name->{'en-GB'});
 					if($statement->actor->mbox == 'mailto:'.$params['agent']){
 						$mypagevisits[] = $statement->object->id;
-						
+
 					}else{
-						$pagevisits[] = $statement->object->id;	
+						$pagevisits[] = $statement->object->id;
 
 					}
 				}
 			}
 		}
-		
+
 		unset($coursedata);
 
 		$myvisitcounts = array_count_values($mypagevisits);
-		//error_log(print_r($pagevisits, true));
+
 		asort($myvisitcounts);
 		$myvisitcounts = array_reverse($myvisitcounts);
 		$pagevisitcounts = array_count_values($pagevisits);
 		asort($pagevisitcounts);
-		
+
 		$pagevisitcounts = array_reverse($pagevisitcounts);
 
 		$myvisits = array();
@@ -210,7 +358,7 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 				'count' => $value,
 			);
 		}
-		
+
 		$pagevisits = array();
 		foreach($pagevisitcounts as $key => $value){
 			$pagevisits[] = array(
@@ -219,14 +367,14 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 				'count' => $value,
 			);
 		}
-	if($ajaxcall){	
+	if($ajaxcall){
 		if(empty($myvisits) && empty($pagevisits)){
 			$result = array(
 				'result' => 'empty',
 			);
 			echo json_encode($result);
 		}else{
-			
+
 			$data = array('myvisits' => $myvisits, 'othervisits' => $pagevisits);
 
 			echo json_encode($data);
@@ -241,9 +389,9 @@ function setAllCourseDataParams($startdate, $untildate, $course){
 	$params = array(
 		'since' => $startdate,
 		'until' => $untildate,
-		'verb' => 'http://activitystrea.ms/schema/1.0/create',
+		//'verb' => 'http://activitystrea.ms/schema/1.0/create',
 		'activity' => $course,
-		'related_activities' => 'true',		
+		'related_activities' => 'true',
 	);
 	$urlparams = http_build_query($params);
 	return $urlparams;
@@ -255,7 +403,7 @@ function fetchEnrollmentActivityData($params){
 	$monthandyear = explode('-', $params['date']);
 	$activity = $params['activity'];
 	$daysinmonth = cal_days_in_month(CAL_GREGORIAN, $monthandyear[0], $monthandyear[1]);
-	
+
 	$urlparams = setEnrollmentCurlParams($verb, $monthandyear, $activity, $daysinmonth);
 
 	$enrollments = getData($urlparams);
@@ -276,7 +424,7 @@ function fetchEnrollmentActivityData($params){
 	$categories = array();
 	foreach(range(1, $daysinmonth) as $daynumber){
 		if($daynumber<10){
-			array_push($categories, array('date' => $monthandyear[1].'-'.$monthandyear[0].'-0'.($daynumber)));	
+			array_push($categories, array('date' => $monthandyear[1].'-'.$monthandyear[0].'-0'.($daynumber)));
 		}else{
 			array_push($categories, array('date' => $monthandyear[1].'-'.$monthandyear[0].'-'.($daynumber)));
 		}
@@ -284,9 +432,9 @@ function fetchEnrollmentActivityData($params){
 		$categories[$daynumber-1]['unenrollments'] = 0;
 	}
 
-	$enrollmentcounts = array_count_values($enrollmentdates);	
+	$enrollmentcounts = array_count_values($enrollmentdates);
 	$unenrollmentcounts = array_count_values($unenrolllmentdates);
-	
+
 	if(empty($enrollmentcounts) && empty($unenrollmentcounts)){
 		$result = array(
 			'result' => 'empty',
@@ -296,10 +444,10 @@ function fetchEnrollmentActivityData($params){
 		foreach($categories as &$category){
 			if(array_key_exists($category['date'], $enrollmentcounts)){
 				$category['enrollments'] = $enrollmentcounts[$category['date']];
-				
+
 			}
 			if(array_key_exists($category['date'], $unenrollmentcounts)){
-				$category['unenrollments'] = $unenrollmentcounts[$category['date']];				
+				$category['unenrollments'] = $unenrollmentcounts[$category['date']];
 			}
 		}
 		echo json_encode($categories);
@@ -309,7 +457,7 @@ function fetchEnrollmentActivityData($params){
 
 function setEnrollmentCurlParams($verb, $monthandyear, $activity, $daysinmonth){
 	$since = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
-	$until = date(DATE_ATOM, mktime(23,59,59,$monthandyear[0], $daysinmonth,$monthandyear[1]));		
+	$until = date(DATE_ATOM, mktime(23,59,59,$monthandyear[0], $daysinmonth,$monthandyear[1]));
 	$params = array(
 		'verb' => $verb,
 		'activity' => $activity,
@@ -321,15 +469,15 @@ function setEnrollmentCurlParams($verb, $monthandyear, $activity, $daysinmonth){
 }
 
 function getData($urlparams){
-	$curl = curl_init();	
+	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?'.$urlparams);
 	curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
-	curl_setopt($curl, CURLOPT_HEADER, XAPIVERSIONHEADER);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array(XAPIVERSIONHEADER));
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$response = curl_exec($curl);
 
 	$response = json_decode($response);
-	$data = $response->statements;
+	$data = isset($response->statements) ? $response->statements : 'empty';
 	//error_log(print_r($data, true));
 	curl_close($curl);
 	return $data;

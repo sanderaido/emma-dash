@@ -8,12 +8,11 @@ $agent = 'koitsalu@tlu.ee';
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/create');
   curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
-  curl_setopt($curl, CURLOPT_HEADER, XAPIVERSIONHEADER);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, array(XAPIVERSIONHEADER));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $data = curl_exec($curl);
   $data = json_decode($data);
   curl_close($curl);
-
   $courses = array();
   foreach($data->statements as $statement){
     if($statement->object->definition->type == 'http://adlnet.gov/expapi/activities/course'){
@@ -66,10 +65,10 @@ foreach($courses as $course){
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   </head>
   <body>
-  <div class="container-fluid">     
+  <div class="container-fluid">
       <div class="row">
       <!-- Content -->
-      <div class="col-md-9">              
+      <div class="col-md-9">
             <h1>Learning Analytics</h1>
             <form class="form-horizontal" role="form">
               <div class="form-group">
@@ -77,7 +76,7 @@ foreach($courses as $course){
                 <div class="col-sm-10">
                   <select class="form-control course-name">
                     <option>Course name</option>
-                    <?php 
+                    <?php
                       foreach($uniquecourses as $course){
                         echo '<option data-url="'.$course->object->id.'">'.$course->object->definition->name->{'en-GB'}.'</option>';
                       }
@@ -88,12 +87,13 @@ foreach($courses as $course){
               <div class="form-group">
                 <label for="inputType" class="col-sm-2 control-label">Type:</label>
                 <div class="col-sm-10">
-                  <select class="form-control">
-                    <option>Enrollment Activity</option>                   
+                  <select class="form-control view-type">
+                    <option data-type="enrollmentactivity">Enrollment Activity</option>
+                    <option data-type="overview">Overview</option>
                   </select>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group month-group">
                 <label for="inputDate" class="col-sm-2 control-label">Month:</label>
                 <div class="col-sm-10">
                 <input type="text" class="form-control datepicker month" />
@@ -101,7 +101,7 @@ foreach($courses as $course){
               </div>
             </form>
           <button type="button" class="btn btn-primary fetch">Fetch data</button>
-          
+
           <div class="chart-container"></div>
             <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">
               <img class="container-loader" src="ajax-loader.gif">
@@ -116,13 +116,13 @@ foreach($courses as $course){
                     <h3 class="panel-title">Enroll - Unenroll</h3>
                   </div>
                   <div class="panel-body">
-                    Please Fetch data to populate this summary box                   
+                    Please Fetch data to populate this summary box
                   </div>
                 </div>
               </div>
-            </div> 
-      </div>  
-    </div>  
+            </div>
+      </div>
+    </div>
       </div>
     </div>
     <div id="log"></div>
