@@ -93,6 +93,12 @@ foreach($courses as $course){
                   </select>
                 </div>
               </div>
+              <div class="form-group overviews-starting-from-group" style="display: none;">
+                <label for="overview-starting-from" class="col-sm-2 control-label">Starting From:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control datepicker overview-starting-from" />
+                </div>
+              </div>
               <div class="form-group month-group">
                 <label for="inputDate" class="col-sm-2 control-label">Month:</label>
                 <div class="col-sm-10">

@@ -57,11 +57,13 @@ function divide($a, $b){
 	}
 }
 
-function getCreateStatements($activity){
+function getCreateStatements($activity, $monthandyear){
+	$since = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
 	$params = array(
 		'verb' => 'http://activitystrea.ms/schema/1.0/create',
 		'activity' => $activity,
 		'related_activities' => 'true',
+		'since' => $since,
 	);
 	$urlparams = http_build_query($params);
 
@@ -82,8 +84,7 @@ function getVisitedStatements($unit){
 	if($response == 'empty'){
 		return 0;
 	}else{
-		 //error_log(print_r($unit, true));
-		// error_log(print_r($response, true));
+
 		return $response;
 	}
 
@@ -95,6 +96,7 @@ function getAnsweredAssignmentStatements($unit){
 		'verb' => 'http://adlnet.gov/expapi/verbs/answered',
 		'activity' => $unit,
 		'related_activities' => 'true',
+
 	);
 
 	$urlparams = http_build_query($params);
@@ -107,17 +109,65 @@ function getAnsweredAssignmentStatements($unit){
 	}
 }
 
-function fetchTeacherOverallProgressData($params){
+function getCourseParticipants($activity, $monthandyear){
+	$since = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
+	$params = array(
+		'verb' => 'http://activitystrea.ms/schema/1.0/join',
+		'activity' => $activity,
+		'since' => $since,
+	);
 
+	$urlparams = http_build_query($params);
+
+	$response = getData($urlparams);
+	if($response == 'empty'){
+		return 0;
+	}else{
+		$participants = array();
+		foreach ($response as $joinStatement) {
+			if(!(array_key_exists($joinStatement->actor->mbox, $participants))){
+				$participants[$joinStatement->actor->mbox] = 1;
+			}else{
+				$participants[$joinStatement->actor->mbox] += 1;
+			}
+		}
+		$params['verb'] = 'http://activitystrea.ms/schema/1.0/leave';
+		$urlparams = http_build_query($params);
+		$leaveStatements = getData($urlparams);
+		foreach ($leaveStatements as $leavestatement) {
+			if(array_key_exists($leavestatement->actor->mbox, $participants)){
+				$participants[$leavestatement->actor->mbox] -= 1;
+			}
+		}
+
+		foreach($participants as $key => $participant){
+			if($participant<1){
+				unset($participants[$key]);
+			}
+		}
+		$participantsflipped = array();
+		foreach($participants as $key => $value){
+			$participantsflipped[] = $key;
+		}
+
+
+		return $participants;
+	}
+}
+
+function fetchTeacherOverallProgressData($params){
+	$monthandyear = explode('-', $params['date']);
 
 	//Get create statements
-	$createstatements = getCreateStatements($params['activity']);
+	$createstatements = getCreateStatements($params['activity'], $monthandyear);
 
 	$lessonscreated = array();
 	$unitscreated = array();
 	foreach($createstatements as $createstatement){
 		if($createstatement->object->definition->type == 'http://adlnet.gov/expapi/activities/lesson'){
-			$lessonscreated[$createstatement->object->id] = array();
+			$lessonscreated[$createstatement->object->id] = array(
+				'lsName' => array($createstatement->object->definition->name->{'en-GB'}),
+			);
 		}elseif ($createstatement->object->definition->type == 'http://adlnet.gov/expapi/activities/unit') {
 			$unitscreated[] = $createstatement;
 		}
@@ -125,25 +175,35 @@ function fetchTeacherOverallProgressData($params){
 	foreach($unitscreated as $unit){
 		$lessonscreated[$unit->context->contextActivities->parent[0]->id][] = $unit->object->id;
 	}
+	$participants = getCourseParticipants($params['activity'], $monthandyear);
 
 // 	Get unit "visited" statements.
 	foreach($lessonscreated as &$lesson){
 		$lesson['views'] = array();
 		$lesson['answers'] = array();
+		$lesson['answerers'] = array();
+		$lesson['viewers'] = array();
 		foreach($lesson as $unit){
 
 			if(!is_array($unit)){
+
 				$tempviews = getVisitedStatements($unit);
 				if(!empty($tempviews)){
 
 					foreach ($tempviews as $tempview) {
-						if(!array_key_exists($tempview->object->id, $lesson['views'])){
-							$lesson['views'][$tempview->object->id] = array(
-								'views' => 1,
-								'name' => $tempview->object->definition->name->{'en-GB'},
-							);
-						}else{
-							$lesson['views'][$tempview->object->id]['views'] += 1;
+						if(array_key_exists($tempview->actor->mbox, $participants)){
+							if(!array_key_exists($tempview->object->id, $lesson['views'])){
+
+								$lesson['views'][$tempview->object->id] = array(
+									'views' => 1,
+									'name' => $tempview->object->definition->name->{'en-GB'},
+								);
+							}else{
+								$lesson['views'][$tempview->object->id]['views'] += 1;
+							}
+							if(!array_key_exists($tempview->actor->mbox, $lesson['viewers'])){
+								$lesson['viewers'][$tempview->actor->mbox] = true;
+							}
 						}
 					}
 				}
@@ -151,13 +211,18 @@ function fetchTeacherOverallProgressData($params){
 				if(!empty($tempanswers)){
 					foreach($tempanswers as $tempanswer) {
 						if($tempanswer->result->success){
-							if(!array_key_exists($tempanswer->object->id, $lesson['answers'])){
-								$lesson['answers'][$tempanswer->object->id] = array(
-									'answers' => 1,
-									'name' => $tempanswer->object->definition->name->{'en-GB'},
-								);
-							}else{
-								$lesson['answers'][$tempanswer->object->id]['answers'] += 1;
+							if(array_key_exists($tempanswer->actor->mbox, $participants)){
+								if(!array_key_exists($tempanswer->object->id, $lesson['answers'])){
+									$lesson['answers'][$tempanswer->object->id] = array(
+										'answers' => 1,
+										'name' => $tempanswer->object->definition->name->{'en-GB'},
+									);
+								}else{
+									$lesson['answers'][$tempanswer->object->id]['answers'] += 1;
+								}
+								if(!array_key_exists($tempanswer->actor->mbox, $lesson['answerers'])){
+									$lesson['answerers'][$tempanswer->actor->mbox] = true;
+								}
 							}
 						}
 					}
@@ -166,6 +231,17 @@ function fetchTeacherOverallProgressData($params){
 		}
 	}
 
+
+
+	foreach($lessonscreated as &$lesson){
+		uasort($lesson['views'], 'compareViews');
+		uasort($lesson['answers'], 'compareAnswers');
+	}
+
+	foreach($lessonscreated as &$lesson){
+		$lesson['viewers'] = count($lesson['viewers']);
+		$lesson['answerers'] = count($lesson['answerers']);
+	}
 	$emptyresponse = false;
 	if($emptyresponse){
 		$result = array(
@@ -174,8 +250,24 @@ function fetchTeacherOverallProgressData($params){
 
 	}else{
 		$result = $lessonscreated;
+		$result['participants'] = count($participants);
 	}
 	echo json_encode($result);
+}
+
+function compareViews($a, $b){
+	if($a['views']==$b['views']){
+		return 0;
+	}
+	return ($a['views'] < $b['views']) ? 1 : -1;
+}
+
+
+function compareAnswers($a, $b){
+	if($a['answers']==$b['answers']){
+		return 0;
+	}
+	return ($a['answers'] < $b['answers']) ? 1 : -1;
 }
 
 function fetchStudentProgressViewData($params){
@@ -183,7 +275,7 @@ function fetchStudentProgressViewData($params){
 	// Get and organise all lessons and units
 	$urlparams = array('activity' => $params['activity'], 'verb' => 'http://activitystrea.ms/schema/1.0/create');
 	$urlparams = http_build_query($urlparams);
-	//error_log(print_r($urlparams, true));
+
 	$test = getData($urlparams);
 	if(empty($test)){
 		$result = array(
@@ -296,7 +388,7 @@ function fetchStudentMaterialViewsData($params){
 
 
 function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
-	//error_log(print_r($params, true));
+
 
 		$start = explode('-', $params['start']);
 		$until = explode('-', $params['end']);
@@ -314,7 +406,7 @@ function fetchStudentRelatedViewsData($params, $ajaxcall = TRUE){
 
 		$coursedata = getData($urlparams);
 		//$createcourse = array();
-		error_log(print_r($coursedata, true));
+
 		//$externalmaterials = array();
 		//$internalmaterials = array();
 
@@ -478,7 +570,7 @@ function getData($urlparams){
 
 	$response = json_decode($response);
 	$data = isset($response->statements) ? $response->statements : 'empty';
-	//error_log(print_r($data, true));
+
 	curl_close($curl);
 	return $data;
 }
