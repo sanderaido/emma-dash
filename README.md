@@ -28,5 +28,6 @@ Statements Implemented:
  
 Dashboard views implemented:
 - [Enrollment history](screenshots/dashboard-view.png)
+- [Teacher Overview](screenshots/teacher-overview.png)
 - Student Related Views
 - Student Material Views
