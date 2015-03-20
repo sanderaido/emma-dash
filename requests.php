@@ -561,19 +561,61 @@ function setEnrollmentCurlParams($verb, $monthandyear, $activity, $daysinmonth){
 }
 
 function getData($urlparams){
+	//error_log('getting data');
 	$curl = curl_init();
+
 	curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?'.$urlparams);
 	curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
 	curl_setopt($curl, CURLOPT_HTTPHEADER, array(XAPIVERSIONHEADER));
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 	$response = curl_exec($curl);
+	curl_close($curl);
 
 	$response = json_decode($response);
 	$data = isset($response->statements) ? $response->statements : 'empty';
 
-	curl_close($curl);
+	if(!empty($response->more)){
+		$newurl = $response->more;
+		$pattern = '/data/xAPI/statements';
+		$newurl = str_replace($pattern, ENDPOINT, $newurl);
+		getMoreData($data, $newurl);
+	}
+
+
 	return $data;
 }
+function getMoreData(&$data, $moreurl){
+	//error_log('getting more data');
 
+	$curl = curl_init();
+
+	curl_setopt($curl, CURLOPT_URL, $moreurl);
+	curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array(XAPIVERSIONHEADER));
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+	$response = curl_exec($curl);
+	curl_close($curl);
+	$response = json_decode($response);
+	$moredata = isset($response->statements) ? $response->statements : array();
+
+	if(empty($moredata)){
+
+		return;
+	}
+
+	$data = array_merge($data, $moredata);
+
+	if(!empty($response->more)){
+		$newurl = $response->more;
+		$pattern = '/data/xAPI/statements';
+		$newurl = str_replace($pattern, ENDPOINT, $newurl);
+		getMoreData($data, $newurl);
+	}
+
+
+	//return $data;
+
+
+}
 
 ?>

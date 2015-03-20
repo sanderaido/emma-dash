@@ -2,7 +2,7 @@
 
 require_once('config.php');
 
-$agent = 'koitsalu@tlu.ee';
+$agent = 'kairit@tlu.ee';
 
 
   $curl = curl_init();
@@ -89,7 +89,7 @@ foreach($courses as $course){
                 <div class="col-sm-10">
                   <select class="form-control view-type">
                     <option data-type="enrollmentactivity">Enrollment Activity</option>
-                    <option data-type="overview">Overview</option>
+                    <!--<option data-type="overview">Overview</option>-->
                   </select>
                 </div>
               </div>
