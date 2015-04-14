@@ -2,32 +2,38 @@
 
 require_once('config.php');
 
-$agent = '19.student@test.ee';
+$agent = 'student.5@test.jee';
+
+    $connection = new MongoClient('mongodb://'.MDBHOST.':'.MDBPORT,[
+    'username' => MDBUSERNAME,
+    'password' => MDBPASSWORD,
+    'db' => MDBDB,
+  ]);
+  $db = $connection->selectDB(MDBDB);
 
 
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, ENDPOINT.'?agent={"mbox":"mailto:'.$agent.'"}&verb=http://activitystrea.ms/schema/1.0/join');
-  curl_setopt($curl, CURLOPT_USERPWD, USERNAME.':'.PASSWORD);
-  curl_setopt($curl, CURLOPT_HTTPHEADER, array(XAPIVERSIONHEADER));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  $data = curl_exec($curl);
-  $data = json_decode($data);
-  curl_close($curl);
+  $collection = $db->statements;
+
+  $query = array(
+    'statement.actor.mbox' => 'mailto:'.$agent,
+    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/join',
+    'statement.object.definition.type' => 'http://adlnet.gov/expapi/activities/course',
+  );
+  $lrsid = '5423ef798aa195fd018b456b';
+  $query['lrs._id'] = $lrsid;
+  $cursor = $collection->find($query);
+  $connection->close();
 
   $courses = array();
-  foreach($data->statements as $statement){
-    if($statement->object->definition->type == 'http://adlnet.gov/expapi/activities/course'){
-      $courses[] = $statement;
+  foreach($cursor as $document){
+    $courses[] = $document['statement'];
+  }
+  $uniquecourses = array();
+  foreach($courses as $course){
+    if(!array_key_exists($course['object']['id'], $uniquecourses)){
+      $uniquecourses[$course['object']['id']] = $course;
     }
   }
-
-  $uniquecourses = array();
-
-foreach($courses as $course){
-  if(!array_key_exists($course->object->id, $uniquecourses)){
-    $uniquecourses[$course->object->id] = $course;
-  }
-}
 
 
 
@@ -81,7 +87,7 @@ foreach($courses as $course){
                     <option>Course name</option>
                     <?php
                       foreach($uniquecourses as $course){
-                        echo '<option data-url="'.$course->object->id.'">'.$course->object->definition->name->{'en-GB'}.'</option>';
+                        echo '<option data-url="'.$course['object']['id'].'">'.$course['object']['definition']['name']['en-GB'].'</option>';
                       }
                     ?>
                   </select>
@@ -93,7 +99,7 @@ foreach($courses as $course){
                   <select class="form-control view-type">
                     <option data-type="relatedViewsStudent">Related Learning Materials</option>
                     <option data-type="materialViewsStudent">Learning Material views</option>
-                    <!--<option data-type="progressStudent">Learning Progress</option>-->
+                    <!-- <option data-type="progressStudent">Learning Progress</option> -->
                   </select>
                 </div>
               </div>
@@ -107,6 +113,12 @@ foreach($courses as $course){
                 <label for="inputDate" class="col-sm-2 control-label">End:</label>
                 <div class="col-sm-10">
                 <input type="text" class="form-control datepicker end" />
+                </div>
+              </div>
+              <div class="form-group student-overviews-starting-from-group" style="display: none;">
+                <label for="overview-starting-from" class="col-sm-2 control-label">Starting From:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control datepicker-month overview-starting-from" />
                 </div>
               </div>
             </form>

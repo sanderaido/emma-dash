@@ -2,12 +2,21 @@
 
 	$(document).ready(function(){
 		var checkDates = true;
+		var options = {format:'dd-mm-yyyy',weekStart:1,viewMode:0, minViewMode:0};
 		$('.view-type').on('change', function(){
 			if($('.view-type').find(':selected').data('type') == 'progressStudent'){
+				options = {format:'mm-yyyy',weekStart:1,viewMode:1, minViewMode:1};
 				$('.start-group').css('display', 'none');
 				$('.end-group').css('display', 'none');
+				if($('.student-overviews-starting-from-group').is(':hidden')){
+					$('.student-overviews-starting-from-group').css('display', 'block');
+				}
+				$('.datepicker-month').datepicker(options).on('changeDate', function(ev){
+					$('.datepicker-months').parent().css('display', 'none');
+				});
 				checkDates = false;
 			}else{
+				options = {format:'dd-mm-yyyy',weekStart:1,viewMode:0, minViewMode:0};
 				checkDates = true;
 				if($('.start-group').is(':hidden')){
 					$('.start-group').css('display', 'block');
@@ -18,7 +27,7 @@
 			}
 		});
 
-		var options = {format:'dd-mm-yyyy',weekStart:1,viewMode:0, minViewMode:0};
+
 		$('.datepicker').datepicker(options).on('changeDate', function(ev){
 			$('.datepicker-months').parent().css('display', 'none');
 		});
@@ -82,7 +91,7 @@
 						'activity': courseurl,
 						'agent': appObject.Agent
 					},
-					url: 'requests.php'
+					url: 'mongorequests.php'
 
 				});
 				request.fail(function( jqXHR, textStatus ){
@@ -112,7 +121,7 @@
 						'activity': courseurl,
 						'agent': appObject.Agent,
 					},
-					url: 'requests.php'
+					url: 'mongorequests.php'
 				});
 				request.fail(function( jqXHR, textStatus ){
 					alert('Request failed ' + textStatus );
@@ -136,8 +145,9 @@
 						'type': 'progressStudent',
 						'activity': courseurl,
 						'agent': appObject.Agent,
+						'date': $('.datepicker-month').val()
 					},
-					url: 'requests.php'
+					url: 'mongorequests.php'
 				});
 				request.fail(function( jqXHR, textStatus){
 					alert('Request failed ' + textStatus );
@@ -247,13 +257,13 @@ function drawMaterialViewsChart(json){
 
 
 
-	var tablehead = '<h3>Most popular resources by course (does not include my views)</h3><table class="table popular-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr><thead>';
+	var tablehead = '<h3>Most popular resources by course (does not include my views)</h3><table class="table popular-resources"><thead><tr><th>#</th><th>Name</th><th>Views</th></tr><thead>';
 	var tablebody = '';
 	var tablefooter = '</table>';
 
 	var counter = 1;
 	$.each(fortable.slice(0,10), function(index, value){
-		tablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
+		tablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td><a href="'+value.url+'">'+value.name+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 
@@ -265,7 +275,7 @@ function drawRelatedViewsTables(json){
 	$('#container').html('');
 	$('.pop-resource-table').html('');
 	$('.summary').html('');
-	var mytablehead= '<h3>Most popular resources by you</h3><table class="table my-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr></thead>';
+	var mytablehead= '<h3>Most popular resources by you</h3><table class="table my-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Views</th></tr></thead>';
 	var mytablebody = '';
 	var mytablefooter = '</table>';
 
@@ -275,15 +285,15 @@ function drawRelatedViewsTables(json){
 	});
 	var counter = 1;
 	$.each(json.myvisits.slice(0,10), function(index, value){
-		mytablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
+		mytablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td><a href="'+value.url+'">'+value.name+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 
-	var othertablehead = '<h3>Other students also accessed these materials</h3><table class="table others-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Page URL</th><th>Views</th></tr></thead>';
+	var othertablehead = '<h3>Other students also accessed these materials</h3><table class="table others-visited-resources"><thead><tr><th>#</th><th>Name</th><th>Views</th></tr></thead>';
 	var othertablebody = '';
 	counter = 1;
 	$.each(json.othervisits.slice(0,10), function(index, value){
-		othertablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td>'+value.name+'</td><td class="visited-url"><a href="'+value.url+'">'+value.url+'</a></td><td>'+value.count+'</td></tr>';
+		othertablebody+='<tr style="text-align: left;"><td>'+counter+'</td><td class="visited-url"><a href="'+value.url+'">'+value.name+'</a></td><td>'+value.count+'</td></tr>';
 		counter++;
 	});
 	$('#container').html(mytablehead+mytablebody+mytablefooter+othertablehead+othertablebody+mytablefooter);

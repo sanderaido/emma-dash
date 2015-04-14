@@ -85,7 +85,7 @@
   					'date': $('.month').val(),
   					'activity': courseurl
   				},
-  				url: 'requests.php'
+  				url: 'mongorequests.php'
 
   			});
   			request.fail(function( jqXHR, textStatus ){
@@ -93,6 +93,7 @@
 
   			});
   			request.done(function(json){
+
   				var cat = [];
   				var enrolls = [];
   				var unenrolls = [];
@@ -100,6 +101,15 @@
   					$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
   					$('.summary').css('display', 'none');
   				}else{
+            if($('.summary').is(':hidden')){
+              $('.summary').css('display', 'inline');
+            }
+            if($('.summary .chart-description').is(':hidden')){
+              $('.summary .chart-description').css('display', 'inline');
+            }
+            if($('.summary .overview-tabs').is(':visible')){
+              $('.summary .overview-tabs').css('display', 'none');
+            }
   					$.each(json, function(index, value){
   						cat.push(value['date']);
   						enrolls.push(value['enrollments']);
@@ -114,6 +124,7 @@
   			});
       }
       if(type == 'overview'){
+
         if($('.summary').is(':visible')){
               $('.summary').css('display', 'none');
             }
@@ -125,7 +136,7 @@
             'date' : $('.overview-starting-from').val(),
             'activity' : courseurl
           },
-          url : 'requests.php'
+          url : 'mongorequests.php'
         });
         request.fail(function( jqXHR, textStatus){
           alert('Request failed '+textStatus);
@@ -134,7 +145,7 @@
           if(json.result == 'empty'){
             $('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a></p></div></div>');
           }else{
-            $('.summary').html('');
+
             var participants = json.participants;
             delete json.participants;
             var cat = [];
@@ -159,6 +170,10 @@
             });
             if($('.summary').is(':hidden')){
               $('.summary').css('display', 'block');
+            }
+
+            if('.summary .overview-tabs'){
+              $('.summary .overview-tabs').html('');
             }
             $('.summary').append('<div class="overview-tabs" role="tabpanel"></div>');
             $('.overview-tabs').append('<ul class="nav nav-tabs overview-tabs-ul" data-tabs="tabs" role="tablist"></ul>');
@@ -192,6 +207,9 @@
 
             drawOverAllProgressforTeacher(cat, views, answers, coursename);
 
+            if($('.summary .chart-description').is(':visible')){
+              $('.summary .chart-description').css('display', 'none');
+            }
             $('.overview-lesson-tab').on('click', function(){
 
 
@@ -215,11 +233,11 @@ function getLessonAnswersSorted(answers, lessonName){
     return '';
   }else{
     table+=('<table class="table table-condensed">');
-    table+=('<thead><tr><th>#</th><th>Assignment Title</th><th>Page URL</th><th>Submissions</th></tr></thead>');
+    table+=('<thead><tr><th>#</th><th>Assignment Title</th><th>Submissions</th></tr></thead>');
     table+=('<tbody>');
     counter = 1;
     $.each(answers, function(key, value){
-      table+=('<tr><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+key+'">'+key+'</a></td><td>'+value.answers+'</td></tr>');
+      table+=('<tr><td>'+counter+'</td><td><a href="'+key+'">'+value.name+'</a></td><td>'+value.answers+'</td></tr>');
       counter++;
     });
     table+=('</tbody></table>');
@@ -234,11 +252,11 @@ function getLessonViewsSorted(views, lessonName){
     return '';
   }else{
     table+=('<table class="table table-condensed">');
-    table+=('<thead><tr><th>#</th><th>Page Title</th><th>Page URL</th><th>Views</th></tr></thead>');
+    table+=('<thead><tr><th>#</th><th>Name</th><th>Views</th></tr></thead>');
     table+=('<tbody>');
     counter = 1;
     $.each(views, function(key, value){
-      table+=('<tr><td>'+counter+'</td><td>'+value.name+'</td><td><a href="'+key+'">'+key+'</a></td><td>'+value.views+'</td></tr>');
+      table+=('<tr><td>'+counter+'</td><td><a href="'+key+'">'+value.name+'</a></td><td>'+value.views+'</td></tr>');
       counter++;
     });
     table+=('</tbody></table>');
@@ -250,6 +268,7 @@ function getLessonViewsSorted(views, lessonName){
 
 
 function drawOverAllProgressforTeacher(cat, views, answers, coursename){
+  $('.summary .chart-description').css('display', 'none');
   $('#container').highcharts({
     chart: {
       type: 'column'
@@ -305,10 +324,6 @@ function drawOverAllProgressforTeacher(cat, views, answers, coursename){
             stack: 'finished assignments'
         }]
   });
-
-
-
-
 }
 
 function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
@@ -364,6 +379,7 @@ function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
 
         }]
     });
+  //$('.summary').html('');
 	$('.summary .panel-body').html('');
 	var totalenrollments = 0;
 	var totalunenrollments = 0;
@@ -378,6 +394,7 @@ function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
 	$('.summary .panel-body').append('<div class="total-unenrollments"></div>');
 	$('.total-enrollments').html(totalenrollments+' Enrollments during selected period');
 	$('.total-unenrollments').html(totalunenrollments+' Unenrollments during selected period');
+
 
 
 }
