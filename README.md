@@ -14,7 +14,7 @@ Notes:
 
 
 Instructions:
-- in [config.php](config.php) define needed constants. These values can be retrieved from your LRS inside Learning Locker(Log in, choose LRS, go to "xAPI statements"). Please note that the endpoint has to have "statements" at the end(e.g. http://your.learninglocker.install/public/data/xAPI/statements). [see this image](screenshots/llscreenshot.png)
+- in [config.php](config.php) define needed constants. These are needed to connect to mongoDB
 - Right now the users account is hardcoded in [index.php](index.php) as $agent. This should be the logged in users e-mail address.
 - Make sure everything is in place from the "Uses" part in this readme(except twitter bootstrap, that comes from cdn).
 - Make sure your xAPI statements actor, verb and object correspond to [these](statement_structures.json).
