@@ -1,5 +1,6 @@
 <?php
 require_once('config.php');
+require_once('measurements.php');
 $params = $_GET;
 $requestType = $params['type'];
 switch($requestType){
@@ -27,7 +28,8 @@ switch($requestType){
 
   case('overviewTeacher'):
 
-    fetchTeacherOverallProgressData($params);
+    //fetchTeacherOverallProgressData($params);
+    fetchTeacherOverallProgress($params);
 
   break;
 }
@@ -49,6 +51,7 @@ function fetchDataFromDB($query){
     'password' => MDBPASSWORD,
     'db' => MDBDB,
   ]);
+  //$connection = new MongoClient();
   $db = $connection->selectDB(MDBDB);
 
 
@@ -167,126 +170,138 @@ function getCourseParticipants($course, $monthandyear){
       unset($participants[$key]);
     }
   }
-  // $participantsflipped = array();
-  // foreach($participants as $key => $value){
-  //   $participantsflipped[] = $key;
-  // }
-  // error_log(print_r($participants, true ));
-  // error_log(print_r($participantsflipped, true));
+
   return $participants;
 
 }
-
-
-function fetchTeacherOverallProgressData($params){
+function fetchTeacherOverallProgress($params){
 
   $monthandyear = explode('-', $params['date']);
   $course = $params['activity'];
   $date = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
 
+  $participants = getCourseParticipants($course, $monthandyear);
+  $participants = array_keys($participants);
+
+  array_push($participants, 'mailto:'.$params['teacher']);
 
 
   $query = array(
-    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/create',
     'statement.context.contextActivities.grouping.0.id' => $course,
-    'statement.object.definition.type' => array('$in' => array('http://adlnet.gov/expapi/activities/unit', 'http://adlnet.gov/expapi/activities/lesson')),
     'statement.timestamp' => array('$gte' => $date),
+    'statement.verb.id' => array('$in' => array('http://activitystrea.ms/schema/1.0/create', 'http://activitystrea.ms/schema/1.0/visited', 'http://adlnet.gov/expapi/verbs/answered')),
+    'statement.actor.mbox' => array('$in' => $participants),
   );
 
-  $cursor = fetchDataFromDB($query);
 
-  $lessonscreated = array();
-  $unitscreated = array();
+  $data = fetchDataFromDB($query);
 
+  $dataorg = array(
+    'visits' => array(),
+    'answers' => array(),
+    'created' => array(),
+  );
+  foreach($data as $single){
+    switch($single['statement']['verb']['id']){
+      case 'http://activitystrea.ms/schema/1.0/create':
 
+        switch($single['statement']['object']['definition']['type']){
+          case 'http://adlnet.gov/expapi/activities/lesson':
+            if(!isset($dataorg['created'][$single['statement']['object']['id']])){
+              $dataorg['created'][$single['statement']['object']['id']] = array(
+                'lsName' => $single['statement']['object']['definition']['name']['en-GB'],
+                'views' => array(),
+                'answers' => array(),
+                'viewers' => array(),
+                'answerers' => array(),
+              );
+            }else{
+              $dataorg['created'][$single['statement']['object']['id']]['lsName'] = $single['statement']['object']['definition']['name']['en-GB'];
+              $dataorg['created'][$single['statement']['object']['id']]['views'] = array();
+              $dataorg['created'][$single['statement']['object']['id']]['viewers'] = array();
+              $dataorg['created'][$single['statement']['object']['id']]['answers'] = array();
+              $dataorg['created'][$single['statement']['object']['id']]['answerers'] = array();
+            }
 
-  foreach($cursor as $document){
-    if($document['statement']['object']['definition']['type'] == 'http://adlnet.gov/expapi/activities/lesson'){
-      $lessonscreated[$document['statement']['object']['id']] = array(
-        'lsName' => array($document['statement']['object']['definition']['name']['en-GB']),
-      );
-    }elseif ($document['statement']['object']['definition']['type'] == 'http://adlnet.gov/expapi/activities/unit'){
-      $unitscreated[] = $document['statement'];
+            break;
+          case 'http://adlnet.gov/expapi/activities/unit':
+            $dataorg['created'][$single['statement']['context']['contextActivities']['parent'][0]['id']]['units'][] = $single['statement']['object']['id'];
+
+            break;
+          case 'http://adlnet.gov/expapi/activities/assignment':
+
+            break;
+        }
+
+        break;
+      case 'http://activitystrea.ms/schema/1.0/visited':
+        $dataorg['visits'][] = $single['statement'];
+        break;
+
+      case 'http://adlnet.gov/expapi/verbs/answered':
+        $dataorg['answers'][] = $single['statement'];
+        break;
     }
   }
-  foreach($unitscreated as $unit){
-    $lessonscreated[$unit['context']['contextActivities']['parent'][0]['id']][] = $unit['object']['id'];
-  }
-
-  $participants = getCourseParticipants($course, $monthandyear);
-
-  foreach($lessonscreated as &$lesson){
-    $lesson['views'] = array();
-    $lesson['answers'] = array();
-    $lesson['viewers'] = array();
-    $lesson['answerers'] = array();
-
-    foreach($lesson as $unit){
-      if(!is_array($unit)){
-        $tempviews = getVisitedStatements($unit);
-        if(!(empty($tempviews))){
-          foreach($tempviews as $tempview){
-            if(array_key_exists($tempview['actor']['mbox'], $participants)){
-              if(!array_key_exists($tempview['object']['id'], $lesson['views'])){
-                $lesson['views'][$tempview['object']['id']] = array(
-                  'views' => 1,
-                  'name' => $tempview['object']['definition']['name']['en-GB'],
-                );
-              }else{
-                $lesson['views'][$tempview['object']['id']]['views'] += 1;
-              }
-              if(!array_key_exists($tempview['actor']['mbox'], $lesson['viewers'])){
-                $lesson['viewers'][$tempview['actor']['mbox']] = true;
-              }
-            }
+  foreach($dataorg['visits'] as $visitstatement){
+    foreach($dataorg['created'] as $key => $value){
+      if(isset($value['units'])){
+        if(isset($visitstatement['context']['contextActivities']['parent'][0]['id']) && in_array($visitstatement['context']['contextActivities']['parent'][0]['id'], $value['units'])){
+          if(!array_key_exists($visitstatement['object']['id'], $dataorg['created'][$key]['views'])){
+            $dataorg['created'][$key]['views'][$visitstatement['object']['id']] = array(
+              'name' => $visitstatement['object']['definition']['name']['en-GB'],
+              'views' => 1,
+            );
+          }else{
+            $dataorg['created'][$key]['views'][$visitstatement['object']['id']]['views'] += 1;
           }
-        }
-        $tempanswers = getAnsweredAssignments($unit);
-        if(!empty($tempanswers)){
-          foreach($tempanswers as $tempanswer){
-            if($tempanswer['result']['success']){
-              if(array_key_exists($tempanswer['actor']['mbox'], $participants)){
-                if(!array_key_exists($tempanswer['object']['id'], $lesson['answers'])){
-                  $lesson['answers'][$tempanswer['object']['id']] = array(
-                    'answers' => 1,
-                    'name' => $tempanswer['object']['definition']['name']['en-GB'],
-                  );
-                }else{
-                  $lesson['answers'][$tempanswer['object']['id']]['answers'] += 1;
-                }
-                if(!array_key_exists($tempanswer['actor']['mbox'], $lesson['answerers'])){
-                  $lesson['answerers'][$tempanswer['actor']['mbox']] = true;
-                }
-              }
-            }
+          if(!array_key_exists($visitstatement['actor']['mbox'], $dataorg['created'][$key]['viewers'])){
+            $dataorg['created'][$key]['viewers'][$visitstatement['actor']['mbox']] = true;
           }
         }
       }
     }
   }
 
-  foreach($lessonscreated as &$lesson){
-    uasort($lesson['views'], 'compareViews');
-    uasort($lesson['answers'], 'compareAnswers');
+  foreach($dataorg['answers'] as $answerstatement){
+    if($answerstatement['result']['success']){
+      foreach($dataorg['created'] as $key => $value){
+        if(in_array($answerstatement['context']['contextActivities']['parent'][0]['id'], $value['units'])){
+          if(!array_key_exists($answerstatement['object']['id'], $dataorg['created'][$key]['answers'])){
+            $dataorg['created'][$key]['answers'][$answerstatement['object']['id']] = array(
+              'name' => $answerstatement['object']['definition']['name']['en-GB'],
+              'answers' => 1,
+            );
+          }else{
+            $dataorg['created'][$key]['answers'][$answerstatement['object']['id']]['answers'] += 1;
+          }
+          if(!array_key_exists($answerstatement['actor']['mbox'], $dataorg['created'][$key]['answerers'])){
+            $dataorg['created'][$key]['answerers'][$answerstatement['actor']['mbox']] = true;
+          }
+        }
+      }
+    }
   }
 
-  foreach($lessonscreated as &$lesson){
+  foreach($dataorg['created'] as &$lesson){
+    uasort($lesson['views'], 'compareViews');
+    uasort($lesson['answers'], 'compareAnswers');
     $lesson['viewers'] = count($lesson['viewers']);
     $lesson['answerers'] = count($lesson['answerers']);
   }
-  $emptyresponse = false;
-  if($emptyresponse){
-    $result = array(
-      'result' => 'empty',
-    );
-
-  }else{
-    $result = $lessonscreated;
-    $result['participants'] = count($participants);
+  foreach($participants as $key => $participant){
+    if($participant=='mailto:'.$params['teacher']){
+      unset($participants[$key]);
+    }
   }
+  $result = $dataorg['created'];
+  $result['participants'] = count($participants);
+
   echo json_encode($result);
 
+
 }
+
 
 function compareViews($a, $b){
   if($a['views']==$b['views']){

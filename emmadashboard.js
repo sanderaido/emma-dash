@@ -104,12 +104,6 @@
             if($('.summary').is(':hidden')){
               $('.summary').css('display', 'inline');
             }
-            if($('.summary .chart-description').is(':hidden')){
-              $('.summary .chart-description').css('display', 'inline');
-            }
-            if($('.summary .overview-tabs').is(':visible')){
-              $('.summary .overview-tabs').css('display', 'none');
-            }
   					$.each(json, function(index, value){
   						cat.push(value['date']);
   						enrolls.push(value['enrollments']);
@@ -117,9 +111,7 @@
   					});
 
   					drawEnrollmentChart(cat, enrolls, unenrolls, coursename);
-  					if($('.summary').is(":hidden")){
-  						$('.summary').css('display', 'inline');
-  					}
+
   				}
   			});
       }
@@ -134,7 +126,8 @@
           data: {
             'type' : 'overviewTeacher',
             'date' : $('.overview-starting-from').val(),
-            'activity' : courseurl
+            'activity' : courseurl,
+            'teacher' : appObject.Agent
           },
           url : 'mongorequests.php'
         });
@@ -145,7 +138,6 @@
           if(json.result == 'empty'){
             $('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a></p></div></div>');
           }else{
-
             var participants = json.participants;
             delete json.participants;
             var cat = [];
@@ -156,31 +148,24 @@
               lsviews = 0;
               lsanswers = 0;
               cat.push(value.lsName);
-
               viewActivity = value.viewers / participants * 100;
-
               views.push(viewActivity);
-
               answerActivity = value.answerers / participants * 100;
-
               answers.push(answerActivity);
-
-
-
             });
             if($('.summary').is(':hidden')){
               $('.summary').css('display', 'block');
             }
 
-            if('.summary .overview-tabs'){
-              $('.summary .overview-tabs').html('');
-            }
-            $('.summary').append('<div class="overview-tabs" role="tabpanel"></div>');
+            drawOverAllProgressforTeacher(cat, views, answers, coursename);
+            $('.summary').html('');
+            $('.summary').append('<div class="overview-summary"><div class="overview-tabs"></div></div>');
             $('.overview-tabs').append('<ul class="nav nav-tabs overview-tabs-ul" data-tabs="tabs" role="tablist"></ul>');
             var isfirst = true;
             var counter = 0;
-            var plotbandFrom = -0.5;
+            var plotbandFrom = -0.5
             var plotbandTo = 0.5;
+
             $.each(json, function(key, value){
               counter++;
               if(isfirst){
@@ -205,11 +190,8 @@
               isfirst = false;
             });
 
-            drawOverAllProgressforTeacher(cat, views, answers, coursename);
 
-            if($('.summary .chart-description').is(':visible')){
-              $('.summary .chart-description').css('display', 'none');
-            }
+
             $('.overview-lesson-tab').on('click', function(){
 
 
@@ -268,7 +250,6 @@ function getLessonViewsSorted(views, lessonName){
 
 
 function drawOverAllProgressforTeacher(cat, views, answers, coursename){
-  $('.summary .chart-description').css('display', 'none');
   $('#container').highcharts({
     chart: {
       type: 'column'
@@ -279,6 +260,12 @@ function drawOverAllProgressforTeacher(cat, views, answers, coursename){
     subtitle: {
       text: coursename
     },
+    // If needed, bar colours can be defined here
+
+        colors: [
+          '#00AA9D',
+          '#C26FAC'
+        ],
     xAxis: {
             categories: cat,
             plotBands: [{
@@ -323,7 +310,7 @@ function drawOverAllProgressforTeacher(cat, views, answers, coursename){
             data: answers,
             stack: 'finished assignments'
         }]
-  });
+    });
 }
 
 function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
@@ -339,10 +326,10 @@ function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
         },
         // If needed, bar colours can be defined here
 
-        // colors: [
-        // 	'#00ff00',
-        // 	'#ff0000'
-        // ],
+        colors: [
+        	'#00AA9D',
+        	'#C26FAC'
+        ],
         xAxis: {
             categories: cat,
             labels: {
@@ -379,8 +366,8 @@ function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
 
         }]
     });
-  //$('.summary').html('');
-	$('.summary .panel-body').html('');
+  $('.summary').html('');
+
 	var totalenrollments = 0;
 	var totalunenrollments = 0;
 	$.each(enrolls, function(index, value){
@@ -389,6 +376,7 @@ function drawEnrollmentChart(cat, enrolls, unenrolls, coursename){
 	$.each(unenrolls, function(index, value){
 		totalunenrollments+=value;
 	});
+  $('.summary').append('<div class="enrollment-summary"><div class="panel panel-default"><div class="panel-heading">Enrollment summary</div><div class="panel-body"></div></div></div>');
 
 	$('.summary .panel-body').append('<div class="total-enrollments"></div>');
 	$('.summary .panel-body').append('<div class="total-unenrollments"></div>');

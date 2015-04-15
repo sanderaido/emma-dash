@@ -13,6 +13,7 @@ $agent = 'kairit@tlu.ee';
     'password' => MDBPASSWORD,
     'db' => MDBDB,
   ]);
+  // $connection = new MongoClient();
   $db = $connection->selectDB(MDBDB);
 
 
@@ -127,20 +128,9 @@ $agent = 'kairit@tlu.ee';
             </div>
             <br>
     <div class="summary">
-      <div class="container-fluid">
-            <div class="row">
-              <div class="chart-description">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Enroll - Unenroll</h3>
-                  </div>
-                  <div class="panel-body">
-                    Please Fetch data to populate this summary box
-                  </div>
-                </div>
-              </div>
-            </div>
-      </div>
+
+
+
     </div>
       </div>
     </div>
