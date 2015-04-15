@@ -1,6 +1,6 @@
 <?php
 require_once('config.php');
-require_once('measurements.php');
+// require_once('measurements.php');
 $params = $_GET;
 $requestType = $params['type'];
 switch($requestType){
@@ -71,46 +71,7 @@ function fetchStudentProgressViewData($params){
   $monthandyear = explode('-', $params['date']);
   $date = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
 
-  $query = array(
-    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/create',
-    'statement.context.contextActivities.grouping.0.id' => $course,
-    'statement.object.definition.type' => array('$in' => array('http://adlnet.gov/expapi/activities/unit', 'http://adlnet.gov/expapi/activities/lesson')),
-    'statement.timestamp' => array('$gte' => $date),
-  );
 
-  $cursor = fetchDataFromDB($query);
-
-  $lessonscreated = array();
-  $unitscreated = array();
-
-
-
-  foreach($cursor as $document){
-    if($document['statement']['object']['definition']['type'] == 'http://adlnet.gov/expapi/activities/lesson'){
-      $lessonscreated[$document['statement']['object']['id']] = array(
-        'lsName' => array($document['statement']['object']['definition']['name']['en-GB']),
-      );
-    }elseif ($document['statement']['object']['definition']['type'] == 'http://adlnet.gov/expapi/activities/unit'){
-      $unitscreated[] = $document['statement'];
-    }
-  }
-  foreach($unitscreated as $unit){
-    $lessonscreated[$unit['context']['contextActivities']['parent'][0]['id']][] = $unit['object']['id'];
-  }
-
-  $participants = getCourseParticipants($course, $monthandyear);
-  $data = array();
-  foreach($lessonscreated as &$lesson){
-    foreach($lesson as $unit){
-      if(!is_array($unit)){
-        $unitassignments = getUnitAssignments($unit, $date);
-        if(!empty($unitassignments)){
-
-        }
-      }
-    }
-
-  }
 
 
 }

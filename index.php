@@ -2,7 +2,7 @@
 
 require_once('config.php');
 
-$agent = 'kairit@tlu.ee';
+$agent = 'test.teacher@email.jee';
 
 
 
@@ -13,7 +13,7 @@ $agent = 'kairit@tlu.ee';
     'password' => MDBPASSWORD,
     'db' => MDBDB,
   ]);
-  // $connection = new MongoClient();
+  //$connection = new MongoClient();
   $db = $connection->selectDB(MDBDB);
 
 
