@@ -8,30 +8,33 @@ switch($requestType){
 
     fetchEnrollmentActivityData($params);
 
-  break;
+    break;
   case('relatedViewsStudent'):
 
     fetchStudentRelatedViewsData($params);
 
-  break;
+    break;
   case('materialViewsStudent'):
 
     fetchStudentMaterialViewsData($params);
 
-  break;
+    break;
 
   case('progressStudent'):
 
     fetchStudentProgressViewData($params);
 
-  break;
+    break;
 
   case('overviewTeacher'):
 
-    //fetchTeacherOverallProgressData($params);
     fetchTeacherOverallProgress($params);
 
-  break;
+    break;
+  case('learningMaterialViewsStudent'):
+
+    fetchStudentMaterialViews($params);
+    break;
 }
 
 function divide($a, $b){
@@ -64,6 +67,8 @@ function fetchDataFromDB($query){
   return $cursor;
 }
 
+
+
 function fetchStudentProgressViewData($params){
 
   $agent = $params['agent'];
@@ -71,7 +76,46 @@ function fetchStudentProgressViewData($params){
   $monthandyear = explode('-', $params['date']);
   $date = date(DATE_ATOM, mktime(0,0,0,$monthandyear[0], 1,$monthandyear[1]));
 
+  $query = array(
+    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/create',
+    'statement.context.contextActivities.grouping.0.id' => $course,
+    'statement.object.definition.type' => array('$in' => array('http://adlnet.gov/expapi/activities/unit', 'http://adlnet.gov/expapi/activities/lesson', 'http://adlnet.gov/expapi/activities/assignment')),
+  );
+  $data = fetchDataFromDB($query);
+  $coursestruct = array();
+  $assignments = array();
+  foreach($data as $statement){
+    switch($statement['statement']['object']['definition']['type']){
+      case 'http://adlnet.gov/expapi/activities/lesson':
+        if(!isset($coursestruct[$statement['statement']['object']['id']])){
+          $coursestruct[$statement['statement']['object']['id']] = array(
+            'lsName' => $statement['statement']['object']['definition']['name']['en-GB'],
+          );
+        }else{
+          $coursestruct[$statement['statement']['object']['id']]['lsName'] = $statement['statement']['object']['definition']['name']['en-GB'];
+        }
 
+        break;
+      case 'http://adlnet.gov/expapi/activities/unit':
+        $coursestruct[$statement['statement']['context']['contextActivities']['parent'][0]['id']]['units'][$statement['statement']['object']['id']] = array();
+
+        break;
+      case 'http://adlnet.gov/expapi/activities/assignment':
+        $assignments[$statement['statement']['object']['id']] = $statement['statement'];
+        break;
+    }
+  }
+
+  // foreach($coursestruct as $lesson){
+  //   foreach($lesson['units'] as $uniturl => &$data){
+  //     $data[]
+  //   }
+  // }
+
+
+  error_log(print_r($coursestruct, true));
+  $participants = getCourseParticipants($course, $monthandyear);
+  $participants = array_keys($participants);
 
 
 }
@@ -92,10 +136,6 @@ function getUnitAssignments($unit, $date){
   }
 
 
-
-}
-
-function checkIfAssignmentPassed($agent, $assignment){
 
 }
 
@@ -204,6 +244,7 @@ function fetchTeacherOverallProgress($params){
         break;
     }
   }
+
   foreach($dataorg['visits'] as $visitstatement){
     foreach($dataorg['created'] as $key => $value){
       if(isset($value['units'])){
@@ -312,6 +353,114 @@ function getVisitedStatements($unit){
   return $response;
 }
 
+function fetchStudentMaterialViews($params){
+
+  $agent = $params['agent'];
+  $course = $params['activity'];
+
+  $start = explode('-', $params['start']);
+  $until = explode('-', $params['end']);
+
+  $startdate = date(DATE_ATOM, strtotime('last monday', mktime(0,0,0, $start[1], $start[0], $start[2])));
+  $untildate = date(DATE_ATOM, strtotime('next sunday', mktime(23,59,59,$until[1], $until[0], $until[2])));
+
+
+
+  $weeksnumber = 1+date('W', strtotime($untildate)) - date('W', strtotime($startdate));
+  $weeks = array();
+  foreach(range(0,$weeksnumber-1) as $number){
+    $first = date(DATE_ATOM, strtotime('+'.$number.' Week', strtotime($startdate)));
+    $last = date(DATE_ATOM, strtotime('next monday', strtotime($first)));
+    $weeks['Week '.($number+1)]['first-day'] = $first;
+    $weeks['Week '.($number+1)]['last-day'] = $last;
+    $weeks['Week '.($number+1)]['myviews'] = 0;
+    $weeks['Week '.($number+1)]['courseviews'] = 0;
+  }
+  $data = array();
+
+  $query = array(
+    'statement.object.id' => $course,
+    'statement.verb.id' => array('$in' => array('http://activitystrea.ms/schema/1.0/join', 'http://activitystrea.ms/schema/1.0/leave')),
+  );
+
+
+  $cursor = fetchDataFromDB($query);
+  $joined = array();
+  $left = array();
+  foreach($cursor as $document){
+    if($document['statement']['verb']['id'] == 'http://activitystrea.ms/schema/1.0/join'){
+      if(!array_key_exists($document['statement']['actor']['mbox'], $joined)){
+        $joined[$document['statement']['actor']['mbox']] = 1;
+      }else{
+        $joined[$document['statement']['actor']['mbox']] += 1;
+      }
+    }else{
+      if(!array_key_exists($document['statement']['actor']['mbox'], $left)){
+        $left[$document['statement']['actor']['mbox']] = 1;
+      }else{
+        $left[$document['statement']['actor']['mbox']] += 1;
+      }
+    }
+  }
+  foreach($left as $mbox => $count){
+    if(isset($joined[$mbox])){
+      $joined[$mbox] = $joined[$mbox]-$left[$mbox];
+      if($joined[$mbox] < 1){
+        unset($joined[$mbox]);
+      }
+    }
+  }
+  $participants = array_keys($joined);
+  $query = array(
+    'statement.actor.mbox' => array('$in' => $participants),
+    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/visited',
+    'statement.timestamp' => array('$gte' => $startdate, '$lte' => $untildate),
+    'statement.context.contextActivities.grouping.0.id' => $course,
+  );
+  $cursor = fetchDataFromDB($query);
+  $myviews = 0;
+  $courseviews = 0;
+  $viewedpages = array();
+  $myviewedpages = array();
+  foreach($cursor as $document){
+    if(!array_key_exists($document['statement']['object']['id'], $viewedpages)){
+      $viewedpages[$document['statement']['object']['id']] = array(
+        'views' => 1,
+        'name' => $document['statement']['object']['definition']['name']['en-GB'],
+      );
+    }else{
+      $viewedpages[$document['statement']['object']['id']]['views'] += 1;
+    }
+    foreach($weeks as &$week){
+      if($document['statement']['timestamp']>$week['first-day'] && $document['statement']['timestamp']<$week['last-day']){
+        if($document['statement']['actor']['mbox'] == 'mailto:'.$agent){
+          $week['myviews'] += 1;
+        }else{
+          $week['courseviews'] += 1;
+        }
+      }
+    }
+  }
+  foreach($weeks as &$week){
+    $week['courseviews'] = $week['courseviews']/count($participants);
+  }
+  $query = array(
+    'statement.actor.mbox' => 'mailto:'.$agent,
+    'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/visited',
+    'statement.context.contextActivities.grouping.0.id' => $course,
+  );
+  $cursor = fetchDataFromDB($query);
+  $myviews = array();
+  foreach($cursor as $document){
+    if(!in_array($document['statement']['object']['id'], $myviews)){
+      $myviews[] = $document['statement']['object']['id'];
+    }
+  }
+  uasort($viewedpages, 'compareViews');
+  $response = array('weeks' => $weeks, 'viewedpages' => $viewedpages, 'myviewedpages' => $myviews);
+  echo json_encode($response);
+
+}
 
 function fetchStudentMaterialViewsData($params){
   $start = explode('-', $params['start']);
@@ -533,6 +682,7 @@ function fetchEnrollmentActivityData($params){
         $category['unenrollments'] = $unenrollmentcounts[$category['date']];
       }
     }
+
     echo json_encode($categories);
   }
 

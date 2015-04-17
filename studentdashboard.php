@@ -4,11 +4,12 @@ require_once('config.php');
 
 $agent = 'student.5@test.jee';
 
-    $connection = new MongoClient('mongodb://'.MDBHOST.':'.MDBPORT,[
-    'username' => MDBUSERNAME,
-    'password' => MDBPASSWORD,
-    'db' => MDBDB,
-  ]);
+  // $connection = new MongoClient('mongodb://'.MDBHOST.':'.MDBPORT,[
+  //   'username' => MDBUSERNAME,
+  //   'password' => MDBPASSWORD,
+  //   'db' => MDBDB,
+  // ]);
+  $connection = new MongoClient();
   $db = $connection->selectDB(MDBDB);
 
 
@@ -19,7 +20,7 @@ $agent = 'student.5@test.jee';
     'statement.verb.id' => 'http://activitystrea.ms/schema/1.0/join',
     'statement.object.definition.type' => 'http://adlnet.gov/expapi/activities/course',
   );
-  $lrsid = '5423ef798aa195fd018b456b';
+  $lrsid = LRSID;
   $query['lrs._id'] = $lrsid;
   $cursor = $collection->find($query);
   $connection->close();
@@ -78,7 +79,7 @@ $agent = 'student.5@test.jee';
       <div class="row">
       <!-- Content -->
       <div class="col-md-9">
-            <h1>Learning Analytics</h1>
+            <h1>Students Activity</h1>
             <form class="form-horizontal" role="form">
               <div class="form-group">
                 <label for="inputCourse" class="col-sm-2 control-label">Course:</label>
@@ -97,9 +98,10 @@ $agent = 'student.5@test.jee';
                 <label for="inputType" class="col-sm-2 control-label">Type:</label>
                 <div class="col-sm-10">
                   <select class="form-control view-type">
-                    <option data-type="relatedViewsStudent">Related Learning Materials</option>
-                    <option data-type="materialViewsStudent">Learning Material views</option>
-                    <!-- <option data-type="progressStudent">Learning Progress</option> -->
+                    <!-- <option data-type="relatedViewsStudent">Related Learning Materials</option>
+                    <option data-type="materialViewsStudent">Learning Material views</option> -->
+                    <option data-type="learningMaterialViewsStudent">Learning Material views</option>
+                    <!-- <option data-type="progressStudent">Overall Progress</option> -->
                   </select>
                 </div>
               </div>
@@ -130,22 +132,9 @@ $agent = 'student.5@test.jee';
             </div>
             <br>
     <div class="summary">
-      <div class="container-fluid">
-            <div class="row">
-              <div class="chart-description">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Material views</h3>
-                  </div>
-                  <div class="panel-body">
-                    Please Fetch data to populate this summary box
-                  </div>
-                </div>
-              </div>
-            </div>
-      </div>
+
     </div>
-    <div class="pop-resource-table"></div>
+
       </div>
     </div>
     <div id="log"></div>

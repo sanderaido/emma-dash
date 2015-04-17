@@ -161,14 +161,119 @@
 					}
 				});
 			}
+			if(type=='learningMaterialViewsStudent'){
+				var request = $.ajax({
+					type: 'GET',
+					dataType: 'json',
+					data:{
+						'type': 'learningMaterialViewsStudent',
+						'activity': courseurl,
+						'agent': appObject.Agent,
+						'start': $('.start').val(),
+						'end': $('.end').val()
+					},
+					url: 'mongorequests.php',
+				});
+				request.fail(function( jqXHR, textStatus ){
+					alert('Request failed ' + textStatus);
+				});
+				request.done(function(json){
+					if(json.result == 'empty'){
+						$('#container').html('<div class="container col-sm-12 jumbo-contain"><div class="jumbotron"><h1>Sorry!</h1><p>There is no data for the <a href="'+courseurl+'">Selected course ('+coursename+')</a> during the selected time period</p></div></div>');
+						$('.summary').css('display', 'none');
+					}else{
+						drawStudentMaterialViews(json);
+						$(function(){
+							$('[data-toggle="popover"]').popover({
+								placement: 'bottom',
+							});
+						});
+					}
+
+				});
+			}
 		});
 
 function drawStudentProgress(json){
 	$('#container').html(JSON.stringify(json, null, 2));
 }
 
+function drawStudentMaterialViews(json){
+	console.log(json);
+	var categories = [];
+	var myviews = [];
+	var courseviews = [];
+	$.each(json.weeks, function(index, value){
+		categories.push(index);
+		myviews.push(value.myviews);
+		courseviews.push(value.courseviews);
+	});
+	$('#container').highcharts({
+		chart: {
+			type: 'column'
+		},
+		title: {
+			text: 'Total resource views, grouped by weeks'
+		},
+		xAxis: {
+			categories: categories
+		},
+		yAxis: {
+			allowDecimals: false,
+			min: 0,
+			title: {
+				text: 'Number of views'
+			}
+		},
+		colors: [
+          '#00AA9D',
+          '#C26FAC'
+        ],
+		tooltip: {
+      formatter: function () {
+          return '<b>' + this.x + '</b><br/>' +
+              this.series.name + ': ' + this.y + '<br/>';
+      }
+    },
+
+    plotOptions: {
+      column: {
+        stacking: 'normal'
+      }
+    },
+    series: [{
+    		name: 'You',
+    		data: myviews,
+    		stack: 'You'
+    	}, {
+    		name: 'Course average',
+    		data: courseviews,
+    		stack: 'course'
+    	}
+    ]
+	});
+	if($('.summary').is(':hidden')){
+		$('.summary').css('display', 'block');
+	}
+	$('.summary').html('');
+	$('.summary').append('<h3>Most Popular Resources</h3>');
+	$('.summary').append('<div class="container-fluid"><table class="table pop-resource-table"><thead><tr><th>#</th><th>Name</th><th>Views</th></tr><thead><tbody></tbody></table></div>');
+	var counter = 1;
+	$.each(json.viewedpages, function(key, value){
+		if($.inArray(key, json.myviewedpages)){
+			$('.pop-resource-table tbody').append('<tr><td>'+counter+'</td><td><a href="'+key+'">'+value.name+'</a></td><td>'+value.views+'</td></tr>');
+		}else{
+			var poptitle = "Please note";
+			var popcontent = "You have not accessed this material yet. You might find something useful there!";
+			$('.pop-resource-table tbody').append('<tr><td>'+counter+'</td><td><a href="'+key+'">'+value.name+'</a> <span data-toggle="popover" data-trigger="hover" data-title="'+poptitle+'" data-content="'+popcontent+'" class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></td><td>'+value.views+'</td></tr>');
+		}
+		counter++;
+	});
+
+}
+
 function drawMaterialViewsChart(json){
-	$('#container').html();
+
 	var fortable = json[0];
 	var forchart = json[1];
 	var categories = [];
